@@ -1,8 +1,8 @@
 Team -
 
-Advik Gupta - Backend Developer
-Ashutosh Swain - Backend Developer
-Tejsva Pandey - Frontend Developer
-Deep Raj - Frontend Developer
-Mahi Gadi - AI/ML Developer
-Chitrita Gahlot - UI/UX Designer
+Advik Gupta - Backend Developer </br>
+Ashutosh Swain - Backend Developer </br>
+Tejsva Pandey - Frontend Developer </br>
+Deep Raj - Frontend Developer </br>
+Mahi Gadi - AI/ML Developer </br>
+Chitrita Gahlot - UI/UX Designer </br>
