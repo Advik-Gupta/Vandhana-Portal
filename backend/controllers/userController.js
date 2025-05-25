@@ -109,20 +109,53 @@ export const logoutUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "User logged out successfully" });
 });
 
+// @desc    Update user
+// @route   PUT /api/users/profile
+// @access  Private
+
+export const updateUser = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const jwtToken = req.cookies.jwt;
+  if (!jwtToken) {
+    res.status(401);
+    throw new Error("Not authorized, no token");
+  }
+
+  const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
+  const userId = decoded.id;
+
+  const user = await User.findById(userId);
+  let updatedUser = null;
+
+  if (user && (await user.matchPassword(oldPassword))) {
+    const salt = await bcrypt.genSalt(10);
+    updatedUser = await User.findByIdAndUpdate(
+      decoded.id,
+      {
+        password: bcrypt.hashSync(newPassword, salt),
+      },
+      { new: true, runValidators: true }
+    );
+  } else {
+    res.status(401);
+    throw new Error("Invalid old password");
+  }
+
+  res.json({
+    _id: updatedUser._id,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    phoneNumber: updatedUser.phoneNumber,
+    role: updatedUser.role,
+  });
+});
+
 // @desc    Get user profile
 // @route   GET /api/users/profile
 // @access  Private
 
 export const getUserProfile = asyncHandler(async (req, res) => {
   res.send("User profile");
-});
-
-// @desc    Update user
-// @route   PUT /api/users/profile
-// @access  Private
-
-export const updateUser = asyncHandler(async (req, res) => {
-  res.send("User updated");
 });
 
 // @desc    Get all users
