@@ -25,6 +25,23 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "engineer", "supervisor"],
       default: "user",
     },
+    notifications: [
+      {
+        message: {
+          type: String,
+          required: true,
+        },
+        type: {
+          type: String,
+          enum: ["info", "warning"],
+          default: "info",
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true },
   { strict: false }

@@ -7,6 +7,13 @@ const users = [
     password: bcrypt.hashSync("123456", 10),
     phoneNumber: "1234567890",
     role: "admin",
+    notifications: [
+      {
+        message: "Welcome to your test site portal dashboard!",
+        type: "info",
+        read: false,
+      },
+    ],
   },
   {
     name: "User One",
@@ -14,6 +21,13 @@ const users = [
     password: bcrypt.hashSync("123456", 10),
     phoneNumber: "0987654321",
     role: "engineer",
+    notifications: [
+      {
+        message: "Welcome to your test site portal dashboard!",
+        type: "info",
+        read: false,
+      },
+    ],
   },
   {
     name: "User Two",
@@ -21,6 +35,13 @@ const users = [
     password: bcrypt.hashSync("123456", 10),
     phoneNumber: "1122334455",
     role: "engineer",
+    notifications: [
+      {
+        message: "Welcome to your test site portal dashboard!",
+        type: "info",
+        read: false,
+      },
+    ],
   },
   {
     name: "Supervisor User",
@@ -28,6 +49,13 @@ const users = [
     password: bcrypt.hashSync("123456", 10),
     phoneNumber: "2233445566",
     role: "supervisor",
+    notifications: [
+      {
+        message: "Welcome to your test site portal dashboard!",
+        type: "info",
+        read: false,
+      },
+    ],
   },
 ];
 
