@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import connectDB from "./config/db.js";
 
@@ -11,12 +12,15 @@ connectDB();
 const app = express();
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const port = process.env.PORT || 8080;
 
 // ______________________________________________________________________________________________
 
 import machineRoutes from "./routes/machineRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 // ______________________________________________________________________________________________
 
@@ -24,6 +28,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
+app.use("/api/users", userRoutes);
 app.use("/api/v1/machines", machineRoutes);
 
 // ______________________________________________________________________________________________
