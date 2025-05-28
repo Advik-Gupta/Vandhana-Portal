@@ -9,7 +9,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5175" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 const port = process.env.PORT || 8080;
@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.use("/api/machines", machineRoutes);
+app.use("/api/v1/machines", machineRoutes);
 
 // ______________________________________________________________________________________________
 

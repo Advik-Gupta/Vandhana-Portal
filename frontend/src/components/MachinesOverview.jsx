@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { machines as allMachines } from "../../data/data";
 import Button from "./ui/Button";
 import DropdownButton from "./ui/DropDownBtn";
 import axios from "axios";
@@ -16,7 +15,7 @@ const MachinesOverview = () => {
   useEffect(() => {
     const fetchMachines = async () => {
       axios
-        .get("http://localhost:8080/api/machines") // your backend endpoint
+        .get("http://localhost:8080/api/v1/machines") // your backend endpoint
         .then((response) => {
           const finalMachineData = [];
 
