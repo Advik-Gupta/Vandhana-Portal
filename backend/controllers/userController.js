@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 import generator from "random-password";
 
 // @desc    Register a new user (first time login)
-// @route   POST /api/users/register
+// @route   POST /api/v1/users/register
 // @access  Public
 
 export const registerUser = asyncHandler(async (req, res) => {
@@ -59,7 +59,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 // @desc    Auth user & get token
-// @route   POST /api/users/login
+// @route   POST /api/v1/users/login
 // @access  Public
 
 export const authUser = asyncHandler(async (req, res) => {
@@ -97,7 +97,7 @@ export const authUser = asyncHandler(async (req, res) => {
 });
 
 // @desc    Logout user & clear cookie
-// @route   POST /api/users/logout
+// @route   POST /api/v1/users/logout
 // @access  Private
 
 export const logoutUser = asyncHandler(async (req, res) => {
@@ -110,7 +110,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update user
-// @route   PUT /api/users/profile
+// @route   PUT /api/v1/users/profile
 // @access  Private
 
 export const updateUser = asyncHandler(async (req, res) => {
@@ -151,7 +151,7 @@ export const updateUser = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get user profile
-// @route   GET /api/users/profile
+// @route   GET /api/v1/users/profile
 // @access  Private
 
 export const getUserProfile = asyncHandler(async (req, res) => {
@@ -159,7 +159,7 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all users
-// @route   GET /api/users
+// @route   GET /api/v1/users
 // @access  Admin
 
 export const getUsers = asyncHandler(async (req, res) => {
@@ -167,7 +167,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get user by ID
-// @route   GET /api/users/:id
+// @route   GET /api/v1/users/:id
 // @access  Admin
 
 export const getUserById = asyncHandler(async (req, res) => {
@@ -175,7 +175,7 @@ export const getUserById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete user
-// @route   DELETE /api/users/:id
+// @route   DELETE /api/v1/users/:id
 // @access  Admin
 
 export const deleteUser = asyncHandler(async (req, res) => {

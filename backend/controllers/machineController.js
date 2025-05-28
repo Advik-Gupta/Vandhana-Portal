@@ -3,7 +3,7 @@ import Machine from "../models/machineModel.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 
 // @desc    Fetch all machines
-// @route   GET /api/machines
+// @route   GET /api/v1/machines
 // @access  Admin
 
 export const getMachines = asyncHandler(async (req, res) => {
@@ -12,7 +12,7 @@ export const getMachines = asyncHandler(async (req, res) => {
 });
 
 // @desc    Fetch single machine
-// @route   GET /api/machines/:id
+// @route   GET /api/v1/machines/:id
 // @access  Admin
 
 export const getMachineById = asyncHandler(async (req, res) => {
