@@ -14,6 +14,13 @@ connectDB();
 
 // ______________________________________________________________________________________________
 
+function getRandomFutureDate(daysAhead = 180) {
+  const now = new Date();
+  const randomDays = Math.floor(Math.random() * daysAhead) + 1; // 1 to daysAhead
+  now.setDate(now.getDate() + randomDays);
+  return now;
+}
+
 const generatePoints = (testSiteName, engineerId) => {
   const points = [];
   for (let i = 1; i <= 6; i++) {
@@ -103,8 +110,8 @@ const generateTestSites = (num, engineerID) => {
       kmFrom: 191.507,
       kmTo: 191.827,
       gmt: 37.65,
-      nextGrindingDueDate: null,
-      nextRepaintingDueDate: null,
+      nextGrindingDueDate: getRandomFutureDate(90),
+      nextRepaintingDueDate: getRandomFutureDate(90),
       currentGrindingCycle: 0,
       currentRepaintingCycle: 0,
       points: generatePoints(`T${i}`, engineerID),
