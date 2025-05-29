@@ -4,7 +4,7 @@ import dd2 from "../../assets/dd2.png"; // Assuming you have an arrow SVG for th
 
 const AddMachine = () => {
   const [machineName, setMachineName] = useState("");
-  const [engineer, setEngineer] = useState("");
+  // const [engineer, setEngineer] = useState("");
   const handleMachineNameChange = (e) => {
     setMachineName(e.target.value);
   };

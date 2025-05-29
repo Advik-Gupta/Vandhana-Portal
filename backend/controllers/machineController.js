@@ -1,6 +1,11 @@
+import jwt from "jsonwebtoken";
+
 import Machine from "../models/machineModel.js";
+import User from "../models/userModel.js";
 
 import asyncHandler from "../middleware/asyncHandler.js";
+
+import { generateTestSites } from "./utilityFunctions.js";
 
 // @desc    Fetch all machines
 // @route   GET /api/v1/machines
@@ -101,4 +106,49 @@ export const updateLatestDueDate = asyncHandler(async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
+});
+
+// @desc    Make new machine
+// @route   POST /api/v1/machines
+// @access  Admin
+
+export const createMachine = asyncHandler(async (req, res) => {
+  const { name, engineerID, testSiteRangeStart } = req.body;
+
+  // get cookie from request
+  const token = req.cookies.jwt;
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  // Verify the token and get user ID
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const creatorID = decoded.id;
+
+  if (!name || !engineerID || !creatorID || !testSiteRangeStart) {
+    return res.status(400).json({
+      message:
+        "Name, engineerID, creatorID, and testSiteRangeStart are required",
+    });
+  }
+
+  const engineer = await User.findById(engineerID);
+  if (!engineer) {
+    return res.status(404).json({ message: "Engineer not found" });
+  }
+  const engineerId = engineer._id;
+
+  const creatorUser = await User.findById(creatorID);
+  if (!creatorUser) {
+    return res.status(404).json({ message: "Engineer not found" });
+  }
+  const creatorId = creatorUser._id;
+
+  const machine = await Machine.create({
+    name,
+    assignedEngineer: engineerId,
+    createdBy: creatorId,
+    testSites: generateTestSites(parseInt(testSiteRangeStart)),
+  });
+
+  res.status(201).json({ machine });
 });
