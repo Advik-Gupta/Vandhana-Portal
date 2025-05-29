@@ -21,7 +21,7 @@ const port = process.env.PORT || 8080;
 
 import machineRoutes from "./routes/machineRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import notificationRoute from "./routes/notificationRoute.js";
+import notificationRoute from "./routes/notificationRoutes.js";
 
 // ______________________________________________________________________________________________
 
