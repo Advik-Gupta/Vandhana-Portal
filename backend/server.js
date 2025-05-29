@@ -21,6 +21,7 @@ const port = process.env.PORT || 8080;
 
 import machineRoutes from "./routes/machineRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import notificationRoute from "./routes/notificationRoute.js";
 
 // ______________________________________________________________________________________________
 
@@ -30,7 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/machines", machineRoutes);
-
+app.use("/api/v1/notifications", notificationRoute);
 // ______________________________________________________________________________________________
 
 app.listen(port, () => {
