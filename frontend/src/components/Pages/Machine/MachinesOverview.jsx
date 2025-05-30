@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Button from "./ui/Button";
-import DropdownButton from "./ui/DropDownBtn";
-import axios from "axios";
+import Button from "../../ui/Button";
+import DropdownButton from "../../ui/DropDownBtn";
+import { fetchMachines } from "../../api/machine";
 
 const MachinesOverview = () => {
   const [filters, setFilters] = useState({
@@ -13,35 +13,13 @@ const MachinesOverview = () => {
   const [allMachines, setAllMachines] = useState([]);
 
   useEffect(() => {
-    const fetchMachines = async () => {
-      axios
-        .get("http://localhost:8080/api/v1/machines") // your backend endpoint
-        .then((response) => {
-          const finalMachineData = [];
-
-          response.data.forEach((machine) => {
-            machine.testSites.forEach((testSite) => {
-              finalMachineData.push({
-                id: machine._id,
-                name: machine.name,
-                testSite: testSite.testSiteNumber,
-                section: testSite.section,
-                station: testSite.station,
-                kmFrom: testSite.kmFrom,
-                kmTo: testSite.kmTo,
-                division: testSite.division,
-                dueDate: machine.nextGrindingDueDate || "N/A",
-              });
-            });
-          });
-
-          setAllMachines(finalMachineData);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    fetchMachines();
+    fetchMachines()
+      .then((data) => {
+        setAllMachines(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching machines:", error);
+      });
   }, []);
 
   const handleFilterChange = (key, value) => {
@@ -57,7 +35,7 @@ const MachinesOverview = () => {
   });
 
   return (
-    <div className="bg-gray-200 p-9 h-[100vh]">
+    <div className="bg-gray-200 p-9 min-h-[100vh]">
       <h1 className="text-6xl font-bold text-center mb-4">Machines Overview</h1>
 
       <div className="mb-4 flex justify-between">
@@ -66,7 +44,7 @@ const MachinesOverview = () => {
           placeholder="Search by machine name or ID..."
           className="bg-gray-300 rounded p-2 w-100"
         />
-        <Button text="+ Add Machine" className="text-xl" />
+        <Button text="+ Add Machine" className="text-xl" href="/add-machine" />
       </div>
 
       <div className="mb-4 flex justify-end">
@@ -109,17 +87,7 @@ const MachinesOverview = () => {
                 </td>
                 <td className="py-2 px-4">{machine.division}</td>
                 <td className="py-2 px-4">{machine.dueDate}</td>
-                <td className="py-2 px-4">
-                  <span
-                  // className={
-                  //   machine.status === "Done"
-                  //     ? "text-green-500"
-                  //     : "text-red-500"
-                  // }
-                  >
-                    {/* {machine.status} */} Status
-                  </span>
-                </td>
+                <td className="py-2 px-4">{machine.status}</td>
               </tr>
             ))}
           </tbody>

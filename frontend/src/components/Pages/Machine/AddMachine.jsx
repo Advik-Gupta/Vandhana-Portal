@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import arrow from "../../assets/arrow.svg";
-import dd2 from "../../assets/dd2.png"; // Assuming you have an arrow SVG for the next button
+import arrow from "../../../assets/arrow.svg";
+import dd2 from "../../../assets/dd2.png"; // Assuming you have an arrow SVG for the next button
 
 const AddMachine = () => {
   const [machineName, setMachineName] = useState("");

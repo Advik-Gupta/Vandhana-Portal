@@ -1,7 +1,7 @@
 import React from "react";
 import TestSiteBlock from "./TestSiteBlock";
-import arrow from "../../assets/arrow.svg";
-import dropdown from "../../assets/dd2.png";
+import arrow from "../../../assets/arrow.svg";
+import dropdown from "../../../assets/dd2.png";
 
 function MachineDetail() {
   return (
