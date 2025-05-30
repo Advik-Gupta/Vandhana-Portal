@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // import { machines as allMachines } from "../../data/data";
 import Button from "./ui/Button";
 import DropdownButton from "./ui/DropDownBtn";
-import axios from "axios";
+import { fetchMachines } from "./api/machine";
 
 const MachinesOverview = () => {
   const [filters, setFilters] = useState({
@@ -14,35 +14,13 @@ const MachinesOverview = () => {
   const [allMachines, setAllMachines] = useState([]);
 
   useEffect(() => {
-    const fetchMachines = async () => {
-      axios
-        .get("http://localhost:8080/api/machines") // your backend endpoint
-        .then((response) => {
-          const finalMachineData = [];
-
-          response.data.forEach((machine) => {
-            machine.testSites.forEach((testSite) => {
-              finalMachineData.push({
-                id: machine._id,
-                name: machine.name,
-                testSite: testSite.testSiteNumber,
-                section: testSite.section,
-                station: testSite.station,
-                kmFrom: testSite.kmFrom,
-                kmTo: testSite.kmTo,
-                division: testSite.division,
-                dueDate: machine.nextGrindingDueDate || "N/A",
-              });
-            });
-          });
-
-          setAllMachines(finalMachineData);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    };
-    fetchMachines();
+    fetchMachines()
+      .then((data) => {
+        setAllMachines(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching machines:", error);
+      });
   }, []);
 
   const handleFilterChange = (key, value) => {

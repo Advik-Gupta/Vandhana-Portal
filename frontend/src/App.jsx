@@ -1,12 +1,19 @@
-import MachinesOverview from "./components/MachinesOverview"
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MachinesOverview from "./components/MachinesOverview";
+import UploadCard from "./components/ui/UploadCard";
+import './App.css';
 
 function App() {
   return (
-    <div className="font-[Montserrat]">
-    <MachinesOverview/>
-    </div>
-  )
+    <Router>
+      <div className="font-[Montserrat]">
+        <Routes>
+          <Route path="/" element={<UploadCard />} />
+          <Route path="/machines" element={<MachinesOverview />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;

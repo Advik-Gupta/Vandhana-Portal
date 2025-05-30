@@ -9,7 +9,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5175" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 const port = process.env.PORT || 8080;
