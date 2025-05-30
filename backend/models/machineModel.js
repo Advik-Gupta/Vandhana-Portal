@@ -7,14 +7,36 @@ const testSitePointSchema = new mongoose.Schema(
       required: true,
     },
     grindCycles: {
-      type: Object,
-      required: true,
-      default: {},
+      type: Map,
+      of: new mongoose.Schema(
+        {
+          pre: {
+            type: Map,
+            of: [String], // category → array of image URLs
+          },
+          post: {
+            type: Map,
+            of: [String],
+          },
+        },
+        { _id: false }
+      ),
     },
     repaintCycles: {
-      type: Object,
-      required: true,
-      default: {},
+      type: Map,
+      of: new mongoose.Schema(
+        {
+          pre: {
+            type: Map,
+            of: [String],
+          },
+          post: {
+            type: Map,
+            of: [String],
+          },
+        },
+        { _id: false }
+      ),
     },
   },
   {

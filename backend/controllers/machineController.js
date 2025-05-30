@@ -4,6 +4,7 @@ import Machine from "../models/machineModel.js";
 import User from "../models/userModel.js";
 
 import asyncHandler from "../middleware/asyncHandler.js";
+import { uploadToR2 } from "./r2uploader.js";
 
 import { generateTestSites } from "./utilityFunctions.js";
 
@@ -151,4 +152,69 @@ export const createMachine = asyncHandler(async (req, res) => {
   });
 
   res.status(201).json({ machine });
+});
+
+// @desc    Upload data for a site of a machine
+// @route   POST /api/v1/machines/upload
+// @access  Admin
+
+export const uploadMachineData = asyncHandler(async (req, res) => {
+  const { machineId, testSiteNumber, pointNumber, cycleType, cycleNumber } =
+    req.body;
+
+  const {
+    customerName,
+    zone,
+    location,
+    line,
+    curveNumber,
+    rail,
+    ohePoleNumber,
+  } = req.body;
+
+  let uploadDate = new Date();
+  const formattedDate = `${String(uploadDate.getDate()).padStart(
+    2,
+    "0"
+  )}-${String(uploadDate.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${uploadDate.getFullYear()}`;
+
+  try {
+    const machine = await Machine.findById(machineId);
+    const testSite = await machine.testSites.find(
+      (site) => site.testSiteNumber === testSiteNumber
+    );
+    const point = await testSite.points.find(
+      (p) => p.pointName === `${testSiteNumber}.${pointNumber}`
+    );
+
+    for (const file of req.files) {
+      const [category, phase] = file.fieldname.split("_"); // e.g. "dptTest_1_pre"
+      const namesOfTests = {
+        "DPT Test": "dptTest",
+        "Top View": "topView",
+        "Gauge View": "gaugeView",
+        "Longitudinal View": "longitudinalView",
+        "Contact Band": "contactBand",
+        Roughness: "roughness",
+        Hardness: "hardness",
+        "Star Gauge": "starGauge",
+      };
+      const customName = `${testSiteNumber}.${pointNumber}_${customerName}_${zone}_${location}_${line}_${rail}_${curveNumber}_${ohePoleNumber}_${category}_${phase}_${formattedDate}`;
+      const url = await uploadToR2(file.buffer, customName, file.mimetype);
+
+      point[cycleType]
+        .get(cycleNumber)
+        [phase].get(namesOfTests[category])
+        .push(url);
+    }
+
+    await machine.save();
+    res.status(200).json({ success: true, machine });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
