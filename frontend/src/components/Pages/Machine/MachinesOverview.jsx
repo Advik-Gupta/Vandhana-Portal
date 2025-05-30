@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import { machines as allMachines } from "../../data/data";
-import Button from "./ui/Button";
-import DropdownButton from "./ui/DropDownBtn";
-import { fetchMachines } from "./api/machine";
+import Button from "../../ui/Button";
+import DropdownButton from "../../ui/DropDownBtn";
+import { fetchMachines } from "../../api/machine";
 
 const MachinesOverview = () => {
   const [filters, setFilters] = useState({
@@ -36,7 +35,7 @@ const MachinesOverview = () => {
   });
 
   return (
-    <div className="bg-gray-200 p-9 h-[100vh]">
+    <div className="bg-gray-200 p-9 min-h-[100vh]">
       <h1 className="text-6xl font-bold text-center mb-4">Machines Overview</h1>
 
       <div className="mb-4 flex justify-between">
@@ -45,7 +44,7 @@ const MachinesOverview = () => {
           placeholder="Search by machine name or ID..."
           className="bg-gray-300 rounded p-2 w-100"
         />
-        <Button text="+ Add Machine" className="text-xl" />
+        <Button text="+ Add Machine" className="text-xl" href="/add-machine" />
       </div>
 
       <div className="mb-4 flex justify-end">
@@ -88,17 +87,7 @@ const MachinesOverview = () => {
                 </td>
                 <td className="py-2 px-4">{machine.division}</td>
                 <td className="py-2 px-4">{machine.dueDate}</td>
-                <td className="py-2 px-4">
-                  <span
-                  // className={
-                  //   machine.status === "Done"
-                  //     ? "text-green-500"
-                  //     : "text-red-500"
-                  // }
-                  >
-                    {/* {machine.status} */} Status
-                  </span>
-                </td>
+                <td className="py-2 px-4">{machine.status}</td>
               </tr>
             ))}
           </tbody>

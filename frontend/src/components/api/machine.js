@@ -36,3 +36,14 @@ export const fetchMachines = async () => {
     return [];
   }
 };
+
+export const addMachine = async (machineData) => {
+  try {
+    console.log(machineData)
+    const response = await client.post('/machines', machineData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding machine:", error);
+    throw error;
+  }
+};

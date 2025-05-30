@@ -1,18 +1,24 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MachinesOverview from "./components/MachinesOverview";
-import UploadCard from "./components/ui/UploadCard";
-import './App.css';
+import "./App.css";
+
+import { Routes, Route } from "react-router-dom";
+
+import MachinesOverview from "./components/Pages/Machine/MachinesOverview";
+import MachineDetail from "./components/Pages/Machine/MachineDetail";
+import AddMachine from "./components/Pages/Machine/AddMachine";
+import DataUploadForm from "./components/DataUploadMachine/DataUploadForm";
 
 function App() {
   return (
-    <Router>
-      <div className="font-[Montserrat]">
-        <Routes>
-          <Route path="/" element={<UploadCard />} />
-          <Route path="/machines" element={<MachinesOverview />} />
-        </Routes>
-      </div>
-    </Router>
+    <Routes className="font-[Montserrat]">
+      <Route path="/" element={<MachinesOverview />} />
+      <Route path="/machine/:id" element={<MachineDetail />} />
+      <Route path="/add-machine" element={<AddMachine />} />
+      <Route
+        path="/upload-data/:machineID/:testSiteNumber/:pointNumber"
+        element={<DataUploadForm />}
+      />
+      {/* Add more routes as needed */}
+    </Routes>
   );
 }
 

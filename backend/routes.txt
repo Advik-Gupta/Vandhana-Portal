@@ -1,0 +1,18 @@
+Fetch all machines
+Fetch single machine
+Add Machine
+
+Route that gives me next grinding/repainting date date for that site
+Get the dates, update the dates CRUD
+
+Repainting - 6 months
+
+Grinding - GMT - 36GMT - 36gmt + todays date = next date
+
+Notification handling CRUD
+// userid: 3423423 > message + alert
+
+
+Upload data form
+
+test site 5 - data upload >> admin reject (delete the images)
