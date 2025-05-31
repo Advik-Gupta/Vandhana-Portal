@@ -4,7 +4,7 @@ import arrow from "../../assets/arrow.svg";
 
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { set } from "mongoose";
+// import { set } from "mongoose";
 
 function DataUploadForm() {
   const { machineID, testSiteNumber, pointNumber } = useParams();
@@ -53,7 +53,7 @@ function DataUploadForm() {
       ...prev,
       [section]: { ...prev[section], pre: file },
     }));
-    // console.log(`Updated Pre File for ${section}:`, file.name); // Debugging line to check pre file change
+    
   };
 
   const handlePostChange = (section, file) => {
