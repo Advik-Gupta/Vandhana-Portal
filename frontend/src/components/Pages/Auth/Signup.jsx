@@ -11,23 +11,39 @@ const Signup = () => {
     email: "",
     phoneNumber: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
+
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+    setError(""); // Clear error when user types
   }
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
       const response = await axios.post("http://localhost:8080/api/v1/users/register", formData);
       if (response.status === 201) {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Error during signup:", error);
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Signup failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,6 +51,11 @@ const Signup = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center">Sign Up</h2>
+        {error && (
+          <div className="mb-4 text-red-600 text-center bg-red-100 p-2 rounded">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -63,8 +84,9 @@ const Signup = () => {
           <button
             type="submit"
             className="w-full bg-black text-white p-3 rounded hover:bg-gray-800"
+            disabled={loading}
           >
-            Sign Up
+            {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
         <p className="mt-4 text-sm text-center">
