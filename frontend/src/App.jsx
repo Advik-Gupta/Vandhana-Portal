@@ -8,7 +8,7 @@ import AddMachine from "./components/Pages/Machine/AddMachine";
 import DataUploadForm from "./components/DataUploadMachine/DataUploadForm";
 import Login from "./components/Pages/Auth/Login";
 import Signup from "./components/Pages/Auth/Signup";
-
+import AdminProtectedRoutes from "./components/Pages/Admin Protected/AdminProtected";
 
 function App() {
   return (
@@ -16,12 +16,14 @@ function App() {
       <Route path="/" element={<MachinesOverview />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/machine/:id" element={<MachineDetail />} />
-      <Route path="/add-machine" element={<AddMachine />} />
       <Route
         path="/upload-data/:machineID/:testSiteNumber/:pointNumber"
         element={<DataUploadForm />}
       />
+      <Route path="/admin" element={<AdminProtectedRoutes />}>
+        <Route path="/admin/add-machine" element={<AddMachine />} />
+        <Route path="/admin/machine/:id" element={<MachineDetail />} />
+      </Route>
       {/* Add more routes as needed */}
     </Routes>
   );

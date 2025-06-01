@@ -1,17 +1,19 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { UserContext } from "../../../contexts/user.context";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { setCurrentUser } = useContext(UserContext);
 
-  const navigate = useNavigate(); // 
+  const navigate = useNavigate(); //
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,21 +22,32 @@ const Login = () => {
       [name]: value,
     }));
     setError(""); // Clear error when user types
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:8080/api/v1/users/login", formData);
-        
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+      if (response.data) {
+        setCurrentUser(response.data); // Update user context
+      }
       if (response.status === 200) {
-        console.log(response);
-        navigate("/"); 
+        navigate("/");
       }
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
         setError(error.response.data.message);
       } else {
         setError("Login failed. Please try again.");

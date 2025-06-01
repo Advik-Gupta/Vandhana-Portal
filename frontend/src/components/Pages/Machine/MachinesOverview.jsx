@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import Button from "../../ui/Button";
 import DropdownButton from "../../ui/DropDownBtn";
 import { fetchMachines } from "../../api/machine";
@@ -44,7 +46,11 @@ const MachinesOverview = () => {
           placeholder="Search by machine name or ID..."
           className="bg-gray-300 rounded p-2 w-100"
         />
-        <Button text="+ Add Machine" className="text-xl" href="/add-machine" />
+        <Button
+          text="+ Add Machine"
+          className="text-xl"
+          href="/admin/add-machine"
+        />
       </div>
 
       <div className="mb-4 flex justify-end">
@@ -78,7 +84,14 @@ const MachinesOverview = () => {
           <tbody>
             {filteredMachines.map((machine) => (
               <tr key={machine.id} className="hover:bg-gray-100">
-                <td className="py-2 px-4">{machine.name}</td>
+                <td className="py-2 px-4">
+                  <Link
+                    to={`/admin/machine/${machine.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    {machine.name}
+                  </Link>
+                </td>
                 <td className="py-2 px-4">{machine.testSite}</td>
                 <td className="py-2 px-4">{machine.section}</td>
                 <td className="py-2 px-4">{machine.station}</td>
