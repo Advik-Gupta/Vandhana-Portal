@@ -171,7 +171,22 @@ export const getUsers = asyncHandler(async (req, res) => {
 // @access  Admin
 
 export const getUserById = asyncHandler(async (req, res) => {
-  res.send("User details");
+  const user = await User.findById(req.params.id).select('-password');
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      role: user.role,
+      notifications: user.notifications,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
 });
 
 // @desc    Delete user
