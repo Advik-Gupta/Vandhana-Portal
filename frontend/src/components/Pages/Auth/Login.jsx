@@ -1,29 +1,81 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; 
+import axios from "axios";
+
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate(); // 
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setError(""); // Clear error when user types
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const response = await axios.post("http://localhost:8080/api/v1/users/login", formData);
+        
+      if (response.status === 200) {
+        console.log(response);
+        navigate("/"); 
+      }
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center">Login</h2>
-        <form action="/api/v1/users/login" method="post">
+        {error && (
+          <div className="mb-4 text-red-600 text-center bg-red-100 p-2 rounded">
+            {error}
+          </div>
+        )}
+        <form onSubmit={handleSubmit}>
           <input
             type="email"
             placeholder="Email"
-            name = "email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             className="w-full p-3 mb-4 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
             name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Password"
             className="w-full p-3 mb-4 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
             className="w-full bg-black text-white p-3 rounded hover:bg-gray-800"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
         <p className="mt-4 text-sm text-center">
