@@ -9,11 +9,13 @@ import DataUploadForm from "./components/DataUploadMachine/DataUploadForm";
 import Login from "./components/Pages/Auth/Login";
 import Signup from "./components/Pages/Auth/Signup";
 import AdminProtectedRoutes from "./components/Pages/Admin Protected/AdminProtected";
+import Dashboard from "./components/Pages/Machine/Dashboard";
 
 function App() {
   return (
     <Routes className="font-[Montserrat]">
       <Route path="/" element={<MachinesOverview />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route

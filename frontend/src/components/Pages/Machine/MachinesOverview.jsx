@@ -40,18 +40,19 @@ const MachinesOverview = () => {
     <div className="bg-gray-200 p-9 min-h-[100vh]">
       <h1 className="text-6xl font-bold text-center mb-4">Machines Overview</h1>
 
-      <div className="mb-4 flex justify-between">
-        <input
-          type="text"
-          placeholder="Search by machine name or ID..."
-          className="bg-gray-300 rounded p-2 w-100"
-        />
-        <Button
-          text="+ Add Machine"
-          className="text-xl"
-          href="/admin/add-machine"
-        />
-      </div>
+        <div className="mb-4 flex justify-between">
+          <input
+            type="text"
+            placeholder="Search by machine name or ID..."
+            className="bg-gray-300 rounded p-2 w-100"
+          />
+          <Button
+            text="+ Add Machine"
+            className="text-xl"
+            href="/admin/add-machine"
+          />
+        
+        </div>
 
       <div className="mb-4 flex justify-end">
         <DropdownButton
