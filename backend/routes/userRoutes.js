@@ -17,6 +17,7 @@ router.post("/register", registerUser);
 router.post("/login", authUser);
 router.post("/logout", logoutUser);
 router.route("/profile").get(getUserProfile).put(updateUser);
-router.route("/:id").get(getUserById).delete(deleteUser);
+router.route("/:id/delete").get(getUserById).delete(deleteUser);
+router.route("/:id").get(getUserById)
 
 export default router;
