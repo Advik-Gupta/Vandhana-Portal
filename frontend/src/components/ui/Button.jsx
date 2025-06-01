@@ -1,25 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Button({ text, className, handleClick, href }) {
+function Button({ text, className, href }) {
   const navigate = useNavigate();
 
-  const onClick = (e) => {
-    if (handleClick) {
-      handleClick(e);
-    }
-    if (href) {
-      navigate(href);
-    }
-  };
 
   return (
     <button
       className={`bg-black text-white p-2 mt-4 rounded ${className}`}
-      onClick={onClick}
+      onClick={()=>{navigate(href)}}
       type="button"
+      
     >
-      {text}
+      {text} 
     </button>
   );
 }

@@ -1,12 +1,9 @@
-// src/api/machines.js
+// src/components/api/machine.js
 import client from "./client";
 
 export const fetchMachines = async () => {
-  console.log("i am reaching here");
-
   try {
-    const response = await client.get('/machines');
-
+    const response = await client.get("/machines");
     const machines = Array.isArray(response.data)
       ? response.data
       : response.data.machines || [];
@@ -14,7 +11,7 @@ export const fetchMachines = async () => {
     const formattedData = [];
 
     machines.forEach((machine) => {
-      machine.testSites.forEach((testSite) => {
+      machine.testSites?.forEach((testSite) => {
         formattedData.push({
           id: machine._id,
           name: machine.name,
@@ -28,7 +25,6 @@ export const fetchMachines = async () => {
         });
       });
     });
-    console.log(formattedData[0])
 
     return formattedData;
   } catch (error) {
@@ -39,11 +35,20 @@ export const fetchMachines = async () => {
 
 export const addMachine = async (machineData) => {
   try {
-    console.log(machineData)
-    const response = await client.post('/machines', machineData);
+    const response = await client.post("/machines", machineData);
     return response.data;
   } catch (error) {
     console.error("Error adding machine:", error);
+    throw error;
+  }
+};
+
+export const fetchMachineById = async (id) => {
+  try {
+    const response = await client.get(`/machines/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching machine with id ${id}:`, error);
     throw error;
   }
 };
