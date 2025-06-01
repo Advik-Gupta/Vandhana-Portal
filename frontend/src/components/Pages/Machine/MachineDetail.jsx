@@ -52,14 +52,13 @@ function MachineDetail() {
   }
 
   return (
-    <div className="flex overflow-hidden flex-col px-11 pt-7 pb-16 bg-white max-md:px-5">
-      <div className="gap-2.5 self-start p-2.5 text-5xl font-bold text-black max-md:text-4xl">
-        {machine.name}
+
+
       </div>
       <div className="z-10 gap-2.5 self-start p-2.5 -mt-3 text-2xl text-black">
         Created by : {createdByUser ? createdByUser.name : "Unknown"}
       </div>
-      <div className="flex flex-wrap gap-5 justify-between self-end px-16 py-3.5 mt-11 max-w-full text-3xl font-medium text-white bg-black rounded-3xl w-[1292px] max-md:px-5 max-md:mt-10">
+      <div className="flex flex-wrap gap-5 justify-between self-end px-16 py-3.5 mr-3 mt-11 max-w-full text-3xl font-medium text-white bg-black rounded-3xl w-[1350px] max-md:px-5 max-md:mt-10">
         <div className="gap-2.5 self-stretch p-2.5 max-md:max-w-full">
           Assigned Engineer - {assignedEngineerUser ? assignedEngineerUser.name : "Unknown"}
         </div>

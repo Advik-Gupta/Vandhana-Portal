@@ -22,7 +22,7 @@ function ViewSection({
   const postId = `postphoto-${uniqueId}`;
   return (
     <section
-      className={`flex flex-wrap gap-5 justify-between px-10 py-4 w-full font-semibold bg-gray-200 rounded-xl max-w-[1307px] max-md:px-5 max-md:max-w-full ${className}`}
+      className={`flex flex-wrap gap-5 justify-between px-10 py-4 w-full font-semibold bg-[#E9E9E9] rounded-xl max-w-[1307px] max-md:px-5 max-md:max-w-full ${className}`}
     >
       <h3 className="self-start text-3xl text-black">{title}</h3>
       <div className="flex gap-8 text-xl text-white max-md:max-w-full">
