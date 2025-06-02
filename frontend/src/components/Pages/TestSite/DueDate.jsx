@@ -1,5 +1,5 @@
 import * as React from "react";
-import checkBox from '../../../assets/checkedbox.svg'
+// import checkBox from '../../../assets/checkedbox.svg'
 function DueDate({ label, showCheckbox, date }) {
   return (
     <div className="rounded-none max-w-[466px]  mt-3">
@@ -11,13 +11,13 @@ function DueDate({ label, showCheckbox, date }) {
           <span className="flex shrink-0 self-start text-2xl  max-w-full bg-white rounded-xl h-[35px] w-[291px] px-3 border-0 outline-none">
             {date}
           </span>
-          {showCheckbox && (
+          {/* {showCheckbox && (
             <img
               src={checkBox}
               className="object-contain shrink-0 w-12 aspect-square"
               alt=""
             />
-          )}
+          )} */}
         </div>
       </div>
     </div>

@@ -45,7 +45,8 @@ function MachineDetail() {
         machine.testSites.map((site, idx) => (
           <TestSiteBlock
             key={site._id || idx}
-            title={`Test Site ${site.testSiteNumber}`}
+            testSiteNumber={site.testSiteNumber}
+            machineId={id}
           />
         ))
       ) : (
