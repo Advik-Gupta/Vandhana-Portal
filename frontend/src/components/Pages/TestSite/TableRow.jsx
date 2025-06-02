@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from "react";
 
 function TableRow({ field, value, isEven, isLast, onChange }) {

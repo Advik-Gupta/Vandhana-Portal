@@ -1,8 +1,4 @@
-import * as React from "react";
-import TableHeader from "./TableHeader";
-import TableRow from "./TableRow";
-import DueDate from "./DueDate";
-
+import React from 'react';
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 import { useState, useEffect } from "react";
@@ -22,7 +18,6 @@ function DataTable() {
     { field: "Post-Grind Date", value: "8/2/2024" },
   ];
 
-  
   const [rowData, setRowData] = useState(
     initialData.map((item) => ({ ...item }))
   );
@@ -30,6 +25,7 @@ function DataTable() {
     initialData.map((item) => ({ ...item }))
   );
   const [isChanged, setIsChanged] = useState(false);
+
   const handleRowChange = (index, newValue) => {
     const updatedRows = rowData.map((item, i) =>
       i === index ? { ...item, value: newValue } : item
@@ -49,10 +45,10 @@ function DataTable() {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex w-[857px] mt-5 max-sm:p-2.5">
-        <div className="relative w-full max-w-[857px]">
-          <div className="overflow-hidden w-full rounded-3xl">
+    <div className="flex flex-col items-center w-full">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-0">
+        <div className="relative w-full max-w-4xl mx-auto">
+          <div className="overflow-hidden w-full rounded-3xl shadow-md">
             <TableHeader />
             {rowData.map((row, index) => (
               <TableRow
@@ -71,7 +67,7 @@ function DataTable() {
       {isChanged && (
         <button
           onClick={handleSave}
-          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all"
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all text-sm md:text-base"
         >
           Save Changes
         </button>
