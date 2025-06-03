@@ -109,10 +109,10 @@ function DataUploadForm() {
   };
 
   return (
-    <main className="flex overflow-hidden flex-col items-start px-11 pt-7 pb-16 bg-white max-md:px-5">
+    <main className="flex overflow-hidden flex-col items-start px-11 pt-7 pb-16 bg-white max-md:px-5 self-center">
       <header className="flex self-stretch max-md:max-w-full">
         <div className="flex flex-col grow shrink-0 mr-0 basis-0 w-fit max-md:max-w-full">
-          <h1 className="gap-2.5 self-start p-2.5 text-5xl font-bold text-black max-md:text-4xl">
+          <h1 className="gap-2.5 self-start p-2.5 text-5xl font-bold text-black max-md:text-4xl text-center">
             {machineName} - {testSiteNumber}
           </h1>
           <div className="flex z-10 flex-col pl-1.5 mt-0 w-full max-md:max-w-full">

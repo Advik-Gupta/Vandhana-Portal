@@ -10,6 +10,7 @@ import Login from "./components/Pages/Auth/Login";
 import Signup from "./components/Pages/Auth/Signup";
 import AdminProtectedRoutes from "./components/Pages/Admin Protected/AdminProtected";
 import Dashboard from "./components/Pages/Machine/Dashboard";
+import TestSiteDetail from "./components/Pages/TestSite/TestSiteDetail";
 
 function App() {
   return (
@@ -19,12 +20,16 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route
-        path="/upload-data/:machineID/:testSiteNumber/:pointNumber"
+        path="/upload-data/:machineID/:testSiteNumber/:pointNumber/:cycle"
         element={<DataUploadForm />}
       />
       <Route path="/admin" element={<AdminProtectedRoutes />}>
         <Route path="/admin/add-machine" element={<AddMachine />} />
         <Route path="/admin/machine/:id" element={<MachineDetail />} />
+        <Route
+          path="/admin/machine/:id/:testSiteNumber"
+          element={<TestSiteDetail />}
+        />
       </Route>
       {/* Add more routes as needed */}
     </Routes>

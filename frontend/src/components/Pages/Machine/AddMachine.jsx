@@ -34,7 +34,6 @@ const AddMachine = () => {
       const response = await addMachine(machineData);
       console.log("Machine created successfully:", response);
       alert("Machine created successfully!");
-      // Optionally reset form fields
       setMachineName("");
       setEngineerId(null);
       setTestSiteRange("");

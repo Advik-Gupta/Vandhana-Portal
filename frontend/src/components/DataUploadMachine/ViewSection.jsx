@@ -8,15 +8,15 @@ function ViewSection({
   onPreChange,
   onPostChange,
 }) {
-  const uniqueId = useId(); // 👈 Generate unique id for this component instance
+  const uniqueId = useId(); 
   const handlePreFileSelect = (e) => {
-    const selectedFile = e.target.files[0]; // user selected file
-    onPreChange(title, selectedFile); // pass it to parent
+    const selectedFile = e.target.files[0]; 
+    onPreChange(title, selectedFile); 
   };
 
   const handlePostFileSelect = (e) => {
     const selectedFile = e.target.files[0];
-    onPostChange(title, selectedFile); // pass to parent
+    onPostChange(title, selectedFile); 
   };
   const preId = `prephoto-${uniqueId}`;
   const postId = `postphoto-${uniqueId}`;
