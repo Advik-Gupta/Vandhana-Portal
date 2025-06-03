@@ -41,8 +41,8 @@ const Dashboard = () => {
                 </button>
               </div>
             ))}
-            <Button text="Upload Data" href="/upload-data/:machineID/:testSiteNumber/:pointNumber"/>
-           \
+            <Button  text="Upload Data" href="/upload-data/:machineID/:testSiteNumber/:pointNumber"/>
+           
           </div>
         </div>
       )}
