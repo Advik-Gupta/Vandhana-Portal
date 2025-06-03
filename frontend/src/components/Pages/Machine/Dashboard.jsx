@@ -1,29 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Button from "../../ui/Button";
+import { fetchRawMachines } from "../../api/machine";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [allMachines, setAllMachines] = useState([]);
 
   const [showUploadUI, setShowUploadUI] = useState(false);
   const [machine, setMachine] = useState("");
   const [testSite, setTestSite] = useState("");
   const [point, setPoint] = useState("");
   const [cycle, setCycle] = useState("");
+  const [cycleNumber, setCycleNumber] = useState("");
+  const [chosenMachineData, setChosenMachineData] = useState(null);
 
-  const machines = ["Machine-A", "Machine-B", "Machine-C"];
-  const testSites = ["Site-101", "Site-102", "Site-103"];
-  const points = ["Point-1", "Point-2", "Point-3"];
-  const cycles = ["Cycle-X", "Cycle-Y", "Cycle-Z"];
+  useEffect(() => {
+    fetchRawMachines()
+      .then((data) => {
+        setAllMachines(data);
+        console.log("Fetched machines:", data);
+      })
+      .catch((error) => {
+        console.error("Error fetching machines:", error);
+      });
+  }, []);
+
+  const machines = allMachines.map((machine) => machine.name);
+  const testSites =
+    allMachines
+      .find((machineToFind) => machineToFind.name === machine)
+      ?.testSites.map((site) => site.testSiteNumber) || [];
+  const points =
+    allMachines
+      .find((machineToFind) => machineToFind.name === machine)
+      ?.testSites.find((site) => site.testSiteNumber === testSite)
+      ?.points.map((pointToFind) => pointToFind.pointName) || [];
+  const cycles = ["Grind", "Repaint"];
+  const cycleNumbers = ["1", "2", "3", "4", "5"];
 
   const toggleUploadUI = () => setShowUploadUI((prev) => !prev);
 
-  const handleUpload = () => {
-    if (machine && testSite && point && cycle) {
-      navigate(`/upload-data/${machine}/${testSite}/${point}/${cycle}`);
-    } else {
-      alert("Please select all fields before uploading.");
-    }
+  const handleMachineChange = (e) => {
+    setMachine(e.target.value);
+    const chosenMachine = allMachines.find(
+      (machineToFind) => machineToFind.name === e.target.value
+    );
+    setChosenMachineData(chosenMachine);
   };
 
   return (
@@ -49,7 +73,7 @@ const Dashboard = () => {
               <select
                 className="w-full border rounded-xl px-4 py-3"
                 value={machine}
-                onChange={(e) => setMachine(e.target.value)}
+                onChange={handleMachineChange}
               >
                 <option value="">-- Select Machine --</option>
                 {machines.map((item, idx) => (
@@ -61,7 +85,9 @@ const Dashboard = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block font-semibold mb-2">Choose Test Site</label>
+              <label className="block font-semibold mb-2">
+                Choose Test Site
+              </label>
               <select
                 className="w-full border rounded-xl px-4 py-3"
                 value={testSite}
@@ -108,8 +134,36 @@ const Dashboard = () => {
               </select>
             </div>
 
+            <div className="mb-6">
+              <label className="block font-semibold mb-2">
+                Choose Cycle Number
+              </label>
+              <select
+                className="w-full border rounded-xl px-4 py-3"
+                value={cycleNumber}
+                onChange={(e) => setCycleNumber(e.target.value)}
+              >
+                <option value="">-- Select Cycle Number --</option>
+                {cycleNumbers.map((item, idx) => (
+                  <option key={idx} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Upload Button */}
-            <Button text="Upload Data" className="w-full" onClick={handleUpload} />
+            <Button
+              text="Upload Data"
+              className="w-full"
+              href={`/upload-data/${chosenMachineData?._id}/${testSite}/${
+                point.split(".")[1]
+              }`}
+              dataToPass={{
+                cycle: cycle,
+                cycleNumber: cycleNumber,
+              }}
+            />
           </div>
         </div>
       )}

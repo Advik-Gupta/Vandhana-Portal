@@ -30,7 +30,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route
-        path="/upload-data/:machineID/:testSiteNumber/:pointNumber/:cycle"
+        path="/upload-data/:machineID/:testSiteNumber/:pointNumber"
         element={<DataUploadForm />}
       />
       <Route path="/" element={<Dashboard />} />

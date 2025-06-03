@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ViewSection from "./ViewSection";
 import arrow from "../../assets/arrow.svg";
 
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 // import { set } from "mongoose";
 
@@ -10,6 +10,10 @@ function DataUploadForm() {
   const { machineID, testSiteNumber, pointNumber } = useParams();
   const [machineName, setMachineName] = useState("");
   const [testSite, setTestSite] = useState(testSiteNumber);
+
+  const location = useLocation();
+  const { data } = location.state || {};
+  const { cycle, cycleNumber } = data || {};
 
   const sectionTitles = [
     "DPT Test",
@@ -30,6 +34,7 @@ function DataUploadForm() {
   );
 
   useEffect(() => {
+    console.log(cycle, cycleNumber);
     const fetchMachineName = async () => {
       try {
         const response = await axios.get(
@@ -53,7 +58,6 @@ function DataUploadForm() {
       ...prev,
       [section]: { ...prev[section], pre: file },
     }));
-    
   };
 
   const handlePostChange = (section, file) => {
@@ -83,8 +87,12 @@ function DataUploadForm() {
       formData.append("machineId", machineID);
       formData.append("testSiteNumber", testSiteNumber); // example
       formData.append("pointNumber", pointNumber);
-      formData.append("cycleType", "grindCycles");
-      formData.append("cycleNumber", 1);
+      if (cycle === "Repaint") {
+        formData.append("cycleType", "repaintCycles");
+      } else {
+        formData.append("cycleType", "grindCycles");
+      }
+      formData.append("cycleNumber", cycleNumber);
       // customerName, zone, location, line, curveType, curveNumber, rail
       formData.append("customerName", "IR");
       formData.append("zone", "WR");

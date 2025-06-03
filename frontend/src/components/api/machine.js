@@ -1,6 +1,20 @@
 // src/components/api/machine.js
 import client from "./client";
 
+export const fetchRawMachines = async () => {
+  try {
+    const response = await client.get("/machines");
+    const machines = Array.isArray(response.data)
+      ? response.data
+      : response.data.machines || [];
+
+    return machines;
+  } catch (error) {
+    console.error("Error fetching machines:", error);
+    return [];
+  }
+};
+
 export const fetchMachines = async () => {
   try {
     const response = await client.get("/machines");
