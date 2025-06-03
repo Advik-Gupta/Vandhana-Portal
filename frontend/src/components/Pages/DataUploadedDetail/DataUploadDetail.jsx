@@ -5,7 +5,12 @@ import ActionButton from "./ActionButton";
 import DataTable from "./DataTable";
 import Button from "../../ui/Button";
 import PhotoDetail from "./PhotoDetail";
+import { useState } from "react";
 function DataUploadedDetail() {
+  const [feedback,setFeedback] = useState("");
+  const handleFeedback =(e)=>{
+    setFeedback(e.target.value)
+  }
   const onApproveButton =()=>{
 
   }
@@ -36,6 +41,8 @@ function DataUploadedDetail() {
                 <h2 className="mt-10 text-white">Remarks / Feedback :</h2>
                 <input
                   type="text"
+                  value={feedback}
+                  onChange={handleFeedback}
                   className="mt-2 w-full px-4 py-2 text-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter your feedback..."
                 />
