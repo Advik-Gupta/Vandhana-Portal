@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Button({ text, className, href }) {
+function Button({ text, className, href, onClick }) {
   const navigate = useNavigate();
   return (
     <button
