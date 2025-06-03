@@ -1,21 +1,30 @@
-import React from 'react';
-import TableHeader from "./TableHeader";
-import TableRow from "./TableRow";
+import React from "react";
 import { useState, useEffect } from "react";
 
-function DataTable() {
+import TableHeader from "./TableHeader";
+import TableRow from "./TableRow";
+
+import { updateTestSiteData } from "../../api/machine";
+
+function DataTable({ machineId, testSiteNumber, machineData }) {
+  const testSite = machineData?.testSites?.find(
+    (site) => site.testSiteNumber === testSiteNumber
+  );
+
   const initialData = [
-    { field: "GMT/Year", value: "37.65" },
-    { field: "Division/Railway", value: "UMB/NR" },
-    { field: "Curve Type", value: "Tangent" },
-    { field: "Curve no/ Degree", value: "Nil" },
-    { field: "Section", value: "KKDE–UMB" },
-    { field: "Station", value: "UMB" },
-    { field: "KM From", value: "191.507" },
-    { field: "KM To", value: "191.827" },
-    { field: "Pre-Grind Date", value: "5/2/2024" },
-    { field: "Grinding Date", value: "7/2/2024" },
-    { field: "Post-Grind Date", value: "8/2/2024" },
+    { field: "GMT/Year", value: testSite.gmt || "" },
+    { field: "Division/Railway", value: testSite.division || "" },
+    { field: "Curve Type", value: testSite.curveType || "" },
+    { field: "Curve no/ Degree", value: testSite.degreeOfCurve || "" },
+    { field: "Section", value: testSite.section || "" },
+    { field: "Station", value: testSite.station || "" },
+    { field: "KM From", value: testSite.kmFrom || "" },
+    { field: "KM To", value: testSite.kmTo || "" },
+    { field: "Next Grind Date", value: testSite.nextGrindingDueDate || "" },
+    {
+      field: "Next Repaint Date",
+      value: testSite.nextRepaintingDueDate || "",
+    },
   ];
 
   const [rowData, setRowData] = useState(
@@ -39,7 +48,21 @@ function DataTable() {
   }, [rowData, initialRowData]);
 
   const handleSave = () => {
-    console.log("Saved Data:", rowData);
+    const updatedTestSiteData = {
+      gmt: rowData[0].value,
+      division: rowData[1].value,
+      curveType: rowData[2].value,
+      degreeOfCurve: rowData[3].value,
+      section: rowData[4].value,
+      station: rowData[5].value,
+      kmFrom: rowData[6].value,
+      kmTo: rowData[7].value,
+      nextGrindingDueDate: rowData[8].value ? new Date(rowData[8].value) : null,
+      nextRepaintingDueDate: rowData[9].value
+        ? new Date(rowData[9].value)
+        : null,
+    };
+    updateTestSiteData(machineId, testSiteNumber, updatedTestSiteData);
     alert("Changes saved!");
     setInitialRowData(rowData.map((item) => ({ ...item }))); // deep clone
   };

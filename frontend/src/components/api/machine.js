@@ -52,3 +52,27 @@ export const fetchMachineById = async (id) => {
     throw error;
   }
 };
+
+export const updateTestSiteData = async (
+  machineId,
+  testSiteNumber,
+  updatedData
+) => {
+  try {
+    const response = await client.put(
+      `/machines/${machineId}/${testSiteNumber}`,
+      {
+        updatedTestSiteData: {
+          ...updatedData,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error updating test site data for machine ${machineId} and test site ${testSiteNumber}:`,
+      error
+    );
+    throw error;
+  }
+};

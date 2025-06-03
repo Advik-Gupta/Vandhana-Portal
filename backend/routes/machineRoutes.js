@@ -12,11 +12,13 @@ import {
   updateLatestDueDate,
   createMachine,
   uploadMachineData,
+  updateTestSiteData,
 } from "../controllers/machineController.js";
 
 router.route("/").get(getMachines).post(createMachine);
 router.route("/:id").get(getMachineById);
 router.post("/:id/upload", upload.any(), uploadMachineData);
 router.route("/:id/date").get(getLatestDueDate).patch(updateLatestDueDate);
+router.route("/:id/:testSiteNumber").put(updateTestSiteData);
 
 export default router;

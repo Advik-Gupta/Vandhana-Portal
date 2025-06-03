@@ -39,7 +39,9 @@ const Login = () => {
       if (response.data) {
         setCurrentUser(response.data); // Update user context
       }
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.role === "admin") {
+        navigate("/admin/machines");
+      } else {
         navigate("/");
       }
     } catch (error) {

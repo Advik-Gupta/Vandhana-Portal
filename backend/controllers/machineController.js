@@ -218,3 +218,60 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+// @desc    Update test site data for a machine
+// @route   PUT /api/v1/machines/:machineId/:testSiteNumber
+// @access  Admin
+
+export const updateTestSiteData = asyncHandler(async (req, res) => {
+  const machineId = req.params.id;
+  const { testSiteNumber } = req.params;
+  const {
+    gmt,
+    division,
+    curveType,
+    degreeOfCurve,
+    section,
+    station,
+    kmFrom,
+    kmTo,
+    nextGrindingDueDate,
+    nextRepaintingDueDate,
+  } = req.body.updatedTestSiteData;
+
+  try {
+    const machine = await Machine.findById(machineId);
+    if (!machine) {
+      return res.status(404).json({ message: "Machine not found" });
+    }
+
+    const testSite = machine.testSites.find(
+      (site) => site.testSiteNumber === testSiteNumber
+    );
+    if (!testSite) {
+      return res.status(404).json({ message: "Test site not found" });
+    }
+
+    testSite.gmt = gmt;
+    testSite.division = division;
+    testSite.curveType = curveType;
+    testSite.degreeOfCurve = degreeOfCurve;
+    testSite.section = section;
+    testSite.station = station;
+    testSite.kmFrom = kmFrom;
+    testSite.kmTo = kmTo;
+    testSite.nextGrindingDueDate = nextGrindingDueDate
+      ? new Date(nextGrindingDueDate)
+      : null;
+    testSite.nextRepaintingDueDate = nextRepaintingDueDate
+      ? new Date(nextRepaintingDueDate)
+      : null;
+
+    await machine.save();
+
+    res.status(200).json({ success: true, machine });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});

@@ -1,5 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+
 import TestSiteBlock from "./TestSiteBlock";
 import dropdown from "../../../assets/dd2.png";
 import useMachineDetails from "../../hooks/useMachineDetails";
@@ -24,7 +25,10 @@ function MachineDetail() {
   if (!machine) return null;
 
   return (
-    <div className="mb-5">
+    <div className="mb-5 p-10">
+      <div className="mb-2 text-4xl font-bold text-black md:text-6xl">
+        {machine.name}
+      </div>
       <div className="z-10 gap-2.5 self-start p-2.5 -mt-3 text-2xl text-black">
         Created by: {createdByUser ? createdByUser.name : "Unknown"}
       </div>
@@ -41,17 +45,20 @@ function MachineDetail() {
         />
       </div>
 
-      {machine.testSites?.length > 0 ? (
-        machine.testSites.map((site, idx) => (
-          <TestSiteBlock
-            key={site._id || idx}
-            testSiteNumber={site.testSiteNumber}
-            machineId={id}
-          />
-        ))
-      ) : (
-        <div className="mt-8 text-xl text-gray-600">No test sites found.</div>
-      )}
+      <div className="flex flex-col items-center justify-center w-full max-w-7xl mx-auto mt-10">
+        {machine.testSites?.length > 0 ? (
+          machine.testSites.map((site, idx) => (
+            <TestSiteBlock
+              key={site._id || idx}
+              testSiteNumber={site.testSiteNumber}
+              machineId={id}
+              machineData={machine}
+            />
+          ))
+        ) : (
+          <div className="mt-8 text-xl text-gray-600">No test sites found.</div>
+        )}
+      </div>
     </div>
   );
 }

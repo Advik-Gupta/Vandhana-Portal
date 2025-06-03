@@ -19,6 +19,6 @@ export const uploadToR2 = async (fileBuffer, customFileName, mimeType) => {
 
   await s3.putObject(params).promise();
 
-  const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${customFileName}`;
+  const fileUrl = `${process.env.R2_PUBLIC_URL}/${customFileName}`;
   return fileUrl;
 };

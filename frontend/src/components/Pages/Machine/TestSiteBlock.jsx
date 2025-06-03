@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const TestSiteBlock = ({ machineId, testSiteNumber }) => {
+const TestSiteBlock = ({ machineId, testSiteNumber, machineData }) => {
   const navigate = useNavigate();
 
   const handleSeeMore = () => {
-    navigate(`/admin/machine/${machineId}/${testSiteNumber}`);
+    navigate(`/admin/machine/${machineId}/${testSiteNumber}`, {
+      state: { machine: machineData },
+    });
   };
 
   return (
@@ -48,7 +50,7 @@ const TestSiteBlock = ({ machineId, testSiteNumber }) => {
         </div>
       </div>
       <div
-        className="self-end px-7 pt-2 pb-5 mt-28 text-lg font-semibold text-black whitespace-nowrap bg-white rounded-3xl max-md:px-5 max-md:mt-10"
+        className="self-end px-7 py-2 mt-28 text-lg font-semibold text-black whitespace-nowrap bg-white rounded-3xl max-md:px-5 max-md:mt-10"
         onClick={handleSeeMore}
         style={{ cursor: "pointer" }}
       >

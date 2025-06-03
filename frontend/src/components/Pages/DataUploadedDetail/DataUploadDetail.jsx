@@ -1,33 +1,45 @@
 import * as React from "react";
+import { useParams } from "react-router-dom";
+
 import StatusHeader from "./StatusHeader";
 import IssuesList from "./IssuesList";
 import ActionButton from "./ActionButton";
 import DataTable from "./DataTable";
 import Button from "../../ui/Button";
 import PhotoDetail from "./PhotoDetail";
-import { useState } from "react";
-function DataUploadedDetail() {
-  const [feedback,setFeedback] = useState("");
-  const handleFeedback =(e)=>{
-    setFeedback(e.target.value)
-  }
-  const onApproveButton =()=>{
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
-  }
-  const onRequestReupload =()=>{
-    
-  }
+function DataUploadedDetail() {
+  const [feedback, setFeedback] = useState("");
+  const { machineID } = useParams();
+  const location = useLocation();
+  const { machine, cycleName, testSiteNumber, pointNo, cycleData } =
+    location.state || {};
+
+  useEffect(() => {
+    console.log(cycleData);
+  }, []);
+
+  const handleFeedback = (e) => {
+    setFeedback(e.target.value);
+  };
+
+  const onApproveButton = () => {};
+  const onRequestReupload = () => {};
   return (
     <div className="bg-gray-200 min-h-screen p-4">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-2 text-6xl font-bold text-black md:text-6xl">
-          Machine Name - Test Site No - Point Name
+          {machine?.name} - {testSiteNumber} - {pointNo}
         </div>
         <div className="mb-4 text-lg text-black md:text-2xl">
-          Data for Grind Cycle 1 | Uploaded by : Person A
+          Data for {cycleName} | Uploaded by : User(
+          {cycleData["post"]["uploadBy"]})
         </div>
         <Button
           text="Return to Site"
+          href={`/admin/machine/${machineID}/${testSiteNumber}`}
           className="mb-6 w-full rounded-xl text-lg md:w-[200px] md:text-xl"
         />
         <div className="flex flex-col gap-6 md:flex-row">
@@ -49,10 +61,13 @@ function DataUploadedDetail() {
               </section>
             </div>
             <IssuesList />
-            <ActionButton onApprove = {onApproveButton} onReupload = {onRequestReupload} />
+            <ActionButton
+              onApprove={onApproveButton}
+              onReupload={onRequestReupload}
+            />
           </section>
         </div>
-        <PhotoDetail />
+        <PhotoDetail cycleData={cycleData} />
       </div>
     </div>
   );
