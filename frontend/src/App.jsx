@@ -21,7 +21,6 @@ function App() {
 
   useEffect(() => {
     if (!user) {
-      // Redirect to login if user is not authenticated
       navigate("/login");
     }
   }, []);
