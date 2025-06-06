@@ -116,11 +116,15 @@ export const updateLatestDueDate = asyncHandler(async (req, res) => {
 export const createMachine = asyncHandler(async (req, res) => {
   const { name, engineerID, testSiteRangeStart } = req.body;
 
-  // get cookie from request
+  // check cookie on server
+  if (!req.cookies || !req.cookies.jwt) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
   const token = req.cookies.jwt;
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+
   // Verify the token and get user ID
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const creatorID = decoded.id;
@@ -190,6 +194,8 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       (p) => p.pointName === `${testSiteNumber}.${pointNumber}`
     );
 
+    console.log(point);
+
     for (const file of req.files) {
       const [category, phase] = file.fieldname.split("_"); // e.g. "dptTest_1_pre"
       const namesOfTests = {
@@ -202,7 +208,13 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
         Hardness: "hardness",
         "Star Gauge": "starGauge",
       };
-      const customName = `${testSiteNumber}.${pointNumber}_${customerName}_${zone}_${location}_${line}_${rail}_${curveNumber}_${ohePoleNumber}_${category}_${phase}_${formattedDate}`;
+      const customName = `${testSiteNumber || "N/A"}.${pointNumber || "N/A"}_${
+        customerName || "N/A"
+      }_${zone || "N/A"}_${location || "N/A"}_${line || "N/A"}_${
+        rail || "N/A"
+      }_${curveNumber || "N/A"}_${ohePoleNumber || "N/A"}_${
+        category || "N/A"
+      }_${phase || "N/A"}_${formattedDate || "N/A"}`;
       const url = await uploadToR2(file.buffer, customName, file.mimetype);
 
       point[cycleType]

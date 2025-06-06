@@ -10,6 +10,60 @@ export const generatePoints = (testSiteName) => {
   for (let i = 1; i <= 6; i++) {
     points.push({
       pointName: `${testSiteName}.${i}`,
+      grindCycles: new Map([
+        [
+          "1",
+          {
+            pre: {
+              dptTest: [],
+              topView: [],
+              gaugeView: [],
+              longitudinalView: [],
+              contactBand: [],
+              roughness: [],
+              hardness: [],
+              starGauge: [],
+            },
+            post: {
+              dptTest: [],
+              topView: [],
+              gaugeView: [],
+              longitudinalView: [],
+              contactBand: [],
+              roughness: [],
+              hardness: [],
+              starGauge: [],
+            },
+          },
+        ],
+      ]),
+      repaintCycles: new Map([
+        [
+          "1",
+          {
+            pre: {
+              dptTest: [],
+              topView: [],
+              gaugeView: [],
+              longitudinalView: [],
+              contactBand: [],
+              roughness: [],
+              hardness: [],
+              starGauge: [],
+            },
+            post: {
+              dptTest: [],
+              topView: [],
+              gaugeView: [],
+              longitudinalView: [],
+              contactBand: [],
+              roughness: [],
+              hardness: [],
+              starGauge: [],
+            },
+          },
+        ],
+      ]),
     });
   }
   return points;

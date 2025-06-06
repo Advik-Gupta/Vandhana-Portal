@@ -8,6 +8,7 @@ const AddMachine = () => {
   const [testSiteRange, setTestSiteRange] = useState("");
   const [engineerId, setEngineerId] = useState(null);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
+
   const handleMachineNameChange = (e) => {
     setMachineName(e.target.value);
   };
@@ -18,6 +19,7 @@ const AddMachine = () => {
     setEngineerId(id);
     setShowAssignPopup(false);
   };
+
   const handleSubmit = async () => {
     if (!machineName || !engineerId || !testSiteRange) {
       alert("Please fill in all fields before submitting.");
@@ -61,17 +63,6 @@ const AddMachine = () => {
         <main className="px-16 py-0 mt-16 max-md:px-8 max-md:py-0 max-md:mt-10 max-sm:px-5 max-sm:py-0 max-sm:mt-8">
           <section className="mb-16 max-sm:mb-10">
             <div className="flex relative items-center bg-black rounded-3xl h-[84px] w-[1292px] max-md:w-full max-md:max-w-[800px] max-sm:h-[70px]">
-              <label className="ml-12 text-3xl text-white max-md:ml-8 max-md:text-2xl max-sm:ml-5 max-sm:text-lg">
-                Machine ID
-              </label>
-              <div className="absolute text-3xl text-white right-[87px] top-[13px] max-md:text-2xl max-md:right-[60px] max-sm:top-2.5 max-sm:right-5 max-sm:text-lg">
-                12345
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-16 max-sm:mb-10">
-            <div className="flex relative items-center bg-black rounded-3xl h-[84px] w-[1292px] max-md:w-full max-md:max-w-[800px] max-sm:h-[70px]">
               <label
                 htmlFor="machineName"
                 className="ml-12 text-3xl text-white max-md:ml-8 max-md:text-2xl max-sm:ml-5 max-sm:text-lg"
@@ -94,7 +85,7 @@ const AddMachine = () => {
                 Assign Engineer
               </label>
               <button
-                onClick={() => setShowAssignPopup(prev=>!prev)}
+                onClick={() => setShowAssignPopup((prev) => !prev)}
                 className="flex absolute top-2/4 justify-center items-center bg-white rounded-xl -translate-y-2/4 h-[41px] right-[75px] w-[50px]"
                 aria-label="Select engineer"
               >

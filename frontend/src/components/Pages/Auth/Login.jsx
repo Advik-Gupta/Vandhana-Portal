@@ -34,6 +34,9 @@ const Login = () => {
         {
           email: formData.email,
           password: formData.password,
+        },
+        {
+          withCredentials: true,
         }
       );
       if (response.data) {

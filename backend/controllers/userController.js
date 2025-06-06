@@ -163,7 +163,12 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 // @access  Admin
 
 export const getUsers = asyncHandler(async (req, res) => {
-  res.send("User list");
+  const users = await User.find({}).select("-password");
+  if (users.length === 0) {
+    res.status(404);
+    throw new Error("No users found");
+  }
+  res.json(users);
 });
 
 // @desc    Get user by ID
@@ -171,7 +176,7 @@ export const getUsers = asyncHandler(async (req, res) => {
 // @access  Admin
 
 export const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select('-password');
+  const user = await User.findById(req.params.id).select("-password");
   if (user) {
     res.json({
       _id: user._id,
@@ -181,7 +186,7 @@ export const getUserById = asyncHandler(async (req, res) => {
       role: user.role,
       notifications: user.notifications,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
     });
   } else {
     res.status(404);

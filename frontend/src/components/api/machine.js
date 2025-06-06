@@ -90,3 +90,21 @@ export const updateTestSiteData = async (
     throw error;
   }
 };
+
+export const fetchEmployees = async () => {
+  try {
+    const response = await client.get("/users");
+    const employees = [];
+    response.data.forEach((user) => {
+      if (user.role === "engineer") {
+        employees.push({
+          ...user,
+        });
+      }
+    });
+    return employees;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
