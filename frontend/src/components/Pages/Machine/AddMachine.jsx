@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import arrow from "../../../assets/arrow.svg";
 import dd2 from "../../../assets/dd2.png";
 import AssignEmployee from "./AssignEmployee";
+import AssignMachineType from "./AssignMachineType";
 import { addMachine } from "../../api/machine";
 const AddMachine = () => {
   const [machineName, setMachineName] = useState("");
   const [testSiteRange, setTestSiteRange] = useState("");
   const [engineerId, setEngineerId] = useState(null);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [machineType, setMachineType] = useState(null);
+  const [showMachineTypePopup, setShowMachineTypePopup] = useState(false);
 
   const handleMachineNameChange = (e) => {
     setMachineName(e.target.value);
@@ -18,6 +20,10 @@ const AddMachine = () => {
   const handleEngineerChange = (id) => {
     setEngineerId(id);
     setShowAssignPopup(false);
+  };
+  const handleMachineTypeChange = (id) => {
+    setMachineType(id);
+    setShowMachineTypePopup(false);
   };
 
   const handleSubmit = async () => {
@@ -30,6 +36,7 @@ const AddMachine = () => {
       name: machineName,
       engineerID: engineerId,
       testSiteRangeStart: testSiteRange,
+      machineType: machineType,
     };
 
     try {
@@ -39,6 +46,7 @@ const AddMachine = () => {
       setMachineName("");
       setEngineerId(null);
       setTestSiteRange("");
+      setMachineType(null);
     } catch (error) {
       console.error("Failed to create machine:", error);
       alert("Error creating machine. Check console for details.");
@@ -57,6 +65,15 @@ const AddMachine = () => {
           <div className="absolute inset-0 z-50 flex justify-center items-start pt-10">
             <div className="w-[700px]   rounded-2xl px-6">
               <AssignEmployee onSelectEngineer={handleEngineerChange} />
+            </div>
+          </div>
+        )}
+        {showMachineTypePopup && (
+          <div className="absolute inset-0 z-50 flex justify-center items-start pt-10">
+            <div className="w-[700px] rounded-2xl px-6">
+              <AssignMachineType
+                onSelectMachineType={handleMachineTypeChange}
+              />
             </div>
           </div>
         )}
@@ -94,6 +111,23 @@ const AddMachine = () => {
               {engineerId && (
                 <div className="absolute text-white text-xl right-[140px]">
                   Assigned: {engineerId}
+                </div>
+              )}
+            </div>
+          </section>
+          <section className="mb-16">
+            <div className="flex relative items-center bg-black rounded-3xl h-[84px] w-[1292px]">
+              <label className="ml-12 text-3xl text-white">Machine Type</label>
+              <button
+                onClick={() => setShowMachineTypePopup((prev) => !prev)}
+                className="flex absolute top-2/4 justify-center items-center bg-white rounded-xl -translate-y-2/4 h-[41px] right-[75px] w-[50px]"
+                aria-label="Select machine type"
+              >
+                <img src={dd2} alt="dropdown" />
+              </button>
+              {machineType && (
+                <div className="absolute text-white text-xl right-[140px]">
+                  Assigned: {machineType}
                 </div>
               )}
             </div>

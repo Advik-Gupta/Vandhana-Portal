@@ -114,7 +114,7 @@ export const updateLatestDueDate = asyncHandler(async (req, res) => {
 // @access  Admin
 
 export const createMachine = asyncHandler(async (req, res) => {
-  const { name, engineerID, testSiteRangeStart } = req.body;
+  const { name, engineerID, testSiteRangeStart, machineType } = req.body;
 
   // check cookie on server
   if (!req.cookies || !req.cookies.jwt) {
@@ -152,7 +152,8 @@ export const createMachine = asyncHandler(async (req, res) => {
     name,
     assignedEngineer: engineerId,
     createdBy: creatorId,
-    testSites: generateTestSites(parseInt(testSiteRangeStart)),
+    machineType,
+    testSites: generateTestSites(parseInt(testSiteRangeStart), machineType),
   });
 
   res.status(201).json({ machine });

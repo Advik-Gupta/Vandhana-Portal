@@ -1,3 +1,13 @@
+// const machineTypes = ["RGI96", "SRGM", "LRG", "FM", "CMRL (VRA)"];
+
+const machineTypes = {
+  RGI96: 6,
+  SRGM: 8,
+  LRG: 2,
+  FM: 2,
+  "CMRL (VRA)": 6,
+};
+
 export const getRandomFutureDate = (daysAhead = 180) => {
   const now = new Date();
   const randomDays = Math.floor(Math.random() * daysAhead) + 1; // 1 to daysAhead
@@ -5,9 +15,9 @@ export const getRandomFutureDate = (daysAhead = 180) => {
   return now;
 };
 
-export const generatePoints = (testSiteName) => {
+export const generatePoints = (testSiteName, type) => {
   const points = [];
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= machineTypes[type]; i++) {
     points.push({
       pointName: `${testSiteName}.${i}`,
       grindCycles: new Map([
@@ -69,7 +79,7 @@ export const generatePoints = (testSiteName) => {
   return points;
 };
 
-export const generateTestSites = (num) => {
+export const generateTestSites = (num, type) => {
   const testSites = [];
   for (let i = num; i <= num + 11; i++) {
     testSites.push({
@@ -88,7 +98,7 @@ export const generateTestSites = (num) => {
       nextRepaintingDueDate: new Date(),
       currentGrindingCycle: 0,
       currentRepaintingCycle: 0,
-      points: generatePoints(`T${i}`),
+      points: generatePoints(`T${i}`, type),
     });
   }
   return testSites;

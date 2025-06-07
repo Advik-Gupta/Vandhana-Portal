@@ -14,6 +14,14 @@ connectDB();
 
 // ______________________________________________________________________________________________
 
+const machineTypes = {
+  RGI96: 6,
+  SRGM: 8,
+  LRG: 2,
+  FM: 2,
+  "CMRL (VRA)": 6,
+};
+
 function getRandomFutureDate(daysAhead = 180) {
   const now = new Date();
   const randomDays = Math.floor(Math.random() * daysAhead) + 1; // 1 to daysAhead
@@ -21,81 +29,167 @@ function getRandomFutureDate(daysAhead = 180) {
   return now;
 }
 
-const generatePoints = (testSiteName, engineerId) => {
+const generatePoints = (testSiteName, engineerId, type) => {
   const points = [];
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= machineTypes[type]; i++) {
     points.push({
       pointName: `${testSiteName}.${i}`,
-      grindCycles: {
-        1: {
-          pre: {
-            dptTest: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-            ],
-            topView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-            ],
-            gaugeView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-            ],
-            uploadDate: new Date(),
-            uploadBy: engineerId,
+      grindCycles: new Map([
+        [
+          "1",
+          {
+            pre: {
+              dptTest: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
+              ],
+              topView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
+              ],
+              gaugeView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
+              ],
+              longitudinalView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
+              ],
+              contactBand: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
+              ],
+              roughness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
+              ],
+              hardness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
+              ],
+              starGauge: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
+              ],
+            },
+            post: {
+              dptTest: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
+              ],
+              topView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
+              ],
+              gaugeView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
+              ],
+              longitudinalView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
+              ],
+              contactBand: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
+              ],
+              roughness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
+              ],
+              hardness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
+              ],
+              starGauge: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
+              ],
+            },
           },
-          post: {
-            dptTest: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-            ],
-            topView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-            ],
-            gaugeView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-            ],
-            uploadDate: new Date(),
-            uploadBy: engineerId,
+        ],
+      ]),
+      repaintCycles: new Map([
+        [
+          "1",
+          {
+            pre: {
+              dptTest: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
+              ],
+              topView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
+              ],
+              gaugeView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
+              ],
+              longitudinalView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
+              ],
+              contactBand: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
+              ],
+              roughness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
+              ],
+              hardness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
+              ],
+              starGauge: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
+              ],
+            },
+            post: {
+              dptTest: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
+              ],
+              topView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
+              ],
+              gaugeView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
+              ],
+              longitudinalView: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
+              ],
+              contactBand: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
+              ],
+              roughness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
+              ],
+              hardness: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
+              ],
+              starGauge: [
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
+                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
+              ],
+            },
           },
-        },
-      },
-      repaintCycles: {
-        1: {
-          pre: {
-            dptTest: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-            ],
-            topView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-            ],
-            gaugeView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-            ],
-            uploadDate: new Date(),
-            uploadBy: engineerId,
-          },
-          post: {
-            dptTest: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-              "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-            ],
-            topView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-            ],
-            gaugeView: [
-              "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-            ],
-            uploadDate: new Date(),
-            uploadBy: engineerId,
-          },
-        },
-      },
+        ],
+      ]),
     });
   }
   return points;
 };
 
-const generateTestSites = (num, engineerID) => {
+const generateTestSites = (num, engineerID, machineType) => {
   const testSites = [];
   for (let i = num; i <= num + 11; i++) {
     testSites.push({
@@ -114,7 +208,7 @@ const generateTestSites = (num, engineerID) => {
       nextRepaintingDueDate: getRandomFutureDate(90),
       currentGrindingCycle: 0,
       currentRepaintingCycle: 0,
-      points: generatePoints(`T${i}`, engineerID),
+      points: generatePoints(`T${i}`, engineerID, machineType),
     });
   }
   return testSites;
@@ -132,10 +226,11 @@ const importData = async () => {
     const engineerUser = createdUsers[1]._id;
 
     const sampleMachines = machines.map((machine) => ({
-      ...machine,
+      machineType: machine["machineType"],
+      name: machine["name"],
       createdBy: adminUser,
       assignedEngineer: engineerUser,
-      testSites: generateTestSites(80, engineerUser),
+      testSites: generateTestSites(80, engineerUser, machine.machineType),
     }));
 
     await Machine.insertMany(sampleMachines);
