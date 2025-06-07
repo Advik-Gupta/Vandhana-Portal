@@ -9,23 +9,20 @@ function TestSiteDetail() {
   const [points, setPoints] = useState([]);
   const { id, testSiteNumber } = useParams();
   const location = useLocation();
-  const { machine } = location.state || {};
+  const { machine, testSitePoints } = location.state || {};
 
   useEffect(() => {
-    const fetchPoints = async () => {
-      const backendData = [
-        { id: 1, pointNo: 1 },
-        { id: 2, pointNo: 2 },
-        { id: 3, pointNo: 3 },
-        { id: 4, pointNo: 4 },
-        { id: 5, pointNo: 5 },
-        { id: 6, pointNo: 6 },
-      ];
-      setPoints(backendData);
-    };
+    const pointsToUse = [];
 
-    fetchPoints();
-  }, []);
+    testSitePoints?.forEach((point) => {
+      pointsToUse.push({
+        id: point._id,
+        pointNo: point.pointName,
+      });
+    });
+
+    setPoints(pointsToUse);
+  }, [testSitePoints]);
 
   return (
     <div className="bg-gray-200 min-h-screen p-4">

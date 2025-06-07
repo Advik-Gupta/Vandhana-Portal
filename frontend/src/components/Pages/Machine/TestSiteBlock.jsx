@@ -1,14 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const TestSiteBlock = ({ machineId, testSiteNumber, machineData }) => {
   const navigate = useNavigate();
+  const [testSitePoints, setTestSitePoints] = React.useState([]);
+
+  useEffect(() => {
+    if (machineData) {
+      const site = machineData.testSites.find(
+        (site) => site.testSiteNumber === testSiteNumber
+      );
+      if (site) {
+        setTestSitePoints(site.points || []);
+      }
+    }
+  }, []);
 
   const handleSeeMore = () => {
     navigate(`/admin/machine/${machineId}/${testSiteNumber}`, {
-      state: { machine: machineData },
+      state: { machine: machineData, testSitePoints: testSitePoints },
     });
   };
+
+  // <div className="px-12 w-full bg-amber-500 rounded-xl max-md:px-5">
+  //               <div className="z-10 gap-2.5 self-stretch p-2.5">T1.5</div>
+  //             </div>
 
   return (
     <div className="flex flex-wrap gap-10 items-start self-center px-7 pt-2.5 pb-5 mt-11 w-full rounded-3xl bg-[#FF9822B2] bg-opacity-70 max-w-[1104px] max-md:px-5 max-md:mt-10 max-md:max-w-full">
@@ -19,34 +35,20 @@ const TestSiteBlock = ({ machineId, testSiteNumber, machineData }) => {
               <div className="z-10 gap-2.5 self-stretch p-1 text-3xl font-bold">
                 Test Site {testSiteNumber}
               </div>
-              <div className="px-12 mt-3.5 ml-2.5 w-full whitespace-nowrap bg-amber-500 rounded-xl max-md:px-5">
-                <div className="z-10 gap-2.5 self-stretch p-2.5">T1.1</div>
-              </div>
-              <div className="px-12 mt-3.5 ml-2.5 w-full whitespace-nowrap bg-amber-500 rounded-xl max-md:px-5">
-                <div className="z-10 gap-2.5 self-stretch p-2.5">T1.2</div>
-              </div>
             </div>
           </div>
-          <div className="ml-5 w-[33%] max-md:ml-0 max-md:w-full">
-            <div className="grow mt-14 text-lg font-medium text-white whitespace-nowrap max-md:mt-10">
-              <div className="px-12 w-full bg-amber-500 rounded-xl max-md:px-5">
-                <div className="z-10 gap-2.5 self-stretch p-2.5">T1.3</div>
-              </div>
-              <div className="px-12 mt-4 w-full bg-amber-500 rounded-xl max-md:px-5">
-                <div className="z-10 gap-2.5 self-stretch p-2.5">T1.4</div>
-              </div>
-            </div>
-          </div>
-          <div className="ml-5 w-[33%] max-md:ml-0 max-md:w-full">
-            <div className="grow mt-14 text-lg font-medium text-white whitespace-nowrap max-md:mt-10">
-              <div className="px-12 w-full bg-amber-500 rounded-xl max-md:px-5">
-                <div className="z-10 gap-2.5 self-stretch p-2.5">T1.5</div>
-              </div>
-              <div className="px-12 mt-4 w-full bg-amber-500 rounded-xl max-md:px-5">
-                <div className="z-10 gap-2.5 self-stretch p-2.5">T1.6</div>
+        </div>
+        <div className="grid grid-cols-3 gap-4 mt-2">
+          {testSitePoints.map((point, index) => (
+            <div
+              key={index}
+              className="px-12 w-full bg-amber-500 rounded-xl max-md:px-5"
+            >
+              <div className="z-10 gap-2.5 self-stretch p-2.5">
+                {point.pointName}
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
       <div

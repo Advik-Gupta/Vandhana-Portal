@@ -12,7 +12,7 @@ const CycleGrid = ({ id, machineId, testSiteNumber, pointNo, machineData }) => {
       (site) => site.testSiteNumber === testSiteNumber
     );
     const pointDataToStore = testSiteData?.points?.find(
-      (point) => point.pointName === `${testSiteNumber}.${pointNo}`
+      (point) => point.pointName === pointNo
     );
     console.log("point:", pointDataToStore);
     setPointData(pointDataToStore);
