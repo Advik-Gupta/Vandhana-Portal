@@ -12,6 +12,8 @@ function TestSiteDetail() {
   const { machine, testSitePoints } = location.state || {};
 
   useEffect(() => {
+    console.log("Machine data:", machine);
+    console.log("Test site points:", testSitePoints);
     const pointsToUse = [];
 
     testSitePoints?.forEach((point) => {

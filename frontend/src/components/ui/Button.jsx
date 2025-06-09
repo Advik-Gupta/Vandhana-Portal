@@ -10,7 +10,7 @@ function Button({ text, className, href, dataToPass }) {
         console.log(`Navigating to: ${href}`);
         if (dataToPass) {
           console.log(`Data to pass: ${JSON.stringify(dataToPass)}`);
-          navigate(href, { state: { data: dataToPass } });
+          navigate(href, { state: { ...dataToPass } });
         } else {
           navigate(href);
         }

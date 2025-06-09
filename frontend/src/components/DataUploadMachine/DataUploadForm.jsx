@@ -12,8 +12,7 @@ function DataUploadForm() {
   const [testSite, setTestSite] = useState(testSiteNumber);
 
   const location = useLocation();
-  const { data } = location.state || {};
-  const { cycle, cycleNumber } = data || {};
+  const { cycle, cycleNumber } = location.state || {};
 
   const sectionTitles = [
     "DPT Test",

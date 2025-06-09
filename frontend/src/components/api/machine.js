@@ -108,3 +108,34 @@ export const fetchEmployees = async () => {
     throw error;
   }
 };
+
+export const updatePointStatus = async (
+  machineId,
+  testSiteNumber,
+  pointNo,
+  status,
+  cycleName = null,
+  cycleId = null
+) => {
+  try {
+    const cycleType = cycleName.toLowerCase().startsWith("grind")
+      ? "grindCycles"
+      : "repaintCycles";
+
+    const response = await client.put(
+      `/machines/${machineId}/${testSiteNumber}/${pointNo}`,
+      {
+        status,
+        cycleId,
+        cycleType,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error updating point status for machine ${machineId}, test site ${testSiteNumber}, point ${pointNo}:`,
+      error
+    );
+    throw error;
+  }
+};

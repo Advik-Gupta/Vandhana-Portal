@@ -1,5 +1,26 @@
 import mongoose from "mongoose";
 
+const grindCycleSchema = new mongoose.Schema({
+  pre: {
+    type: Map,
+    of: [String],
+  },
+  post: {
+    type: Map,
+    of: [String],
+  },
+  uploadBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "employees",
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["issues", "approved", "closed", "pending"],
+    default: "Pending",
+  },
+});
+
 const testSitePointSchema = new mongoose.Schema(
   {
     pointName: {
@@ -8,35 +29,13 @@ const testSitePointSchema = new mongoose.Schema(
     },
     grindCycles: {
       type: Map,
-      of: new mongoose.Schema(
-        {
-          pre: {
-            type: Map,
-            of: [String], // category → array of image URLs
-          },
-          post: {
-            type: Map,
-            of: [String],
-          },
-        },
-        { _id: false }
-      ),
+      of: grindCycleSchema,
+      default: {},
     },
     repaintCycles: {
       type: Map,
-      of: new mongoose.Schema(
-        {
-          pre: {
-            type: Map,
-            of: [String],
-          },
-          post: {
-            type: Map,
-            of: [String],
-          },
-        },
-        { _id: false }
-      ),
+      of: grindCycleSchema,
+      default: {},
     },
   },
   {
