@@ -14,18 +14,24 @@ import AdminProtectedRoutes from "./components/Pages/Admin Protected/AdminProtec
 import Dashboard from "./components/Pages/Machine/Dashboard";
 import TestSiteDetail from "./components/Pages/TestSite/TestSiteDetail";
 import DataUploadedDetail from "./components/Pages/DataUploadedDetail/DataUploadDetail";
-import EmployeeListDashBoard from "./components/Pages/Employee/EmployeeListDashBoard"
+import EmployeeListDashBoard from "./components/Pages/Employee/EmployeeListDashBoard";
 import HomePageAdmin from "./components/Pages/AdminDashBoard/HomePageAdmin";
 
 function App() {
-  const { user } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+    if (!currentUser) {
       navigate("/login");
+    } else {
+      if (currentUser.role === "admin") {
+        navigate("/admin/home");
+      } else {
+        navigate("/");
+      }
     }
-  }, []);
+  }, [currentUser]);
 
   return (
     <Routes className="font-[Montserrat]">
@@ -37,6 +43,7 @@ function App() {
       />
       <Route path="/" element={<Dashboard />} />
       <Route path="/admin" element={<AdminProtectedRoutes />}>
+        <Route path="/admin/home" element={<HomePageAdmin />} />
         <Route path="/admin/machines" element={<MachinesOverview />} />
         <Route path="/admin/employees" element={<EmployeeListDashBoard />} />
         <Route path="/admin/add-machine" element={<AddMachine />} />

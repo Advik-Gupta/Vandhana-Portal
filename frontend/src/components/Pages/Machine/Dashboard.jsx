@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
 
+import { UserContext } from "../../../contexts/user.context";
 import Button from "../../ui/Button";
 import { fetchRawMachines } from "../../api/machine";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [allMachines, setAllMachines] = useState([]);
-
+  const { currentUser } = useContext(UserContext);
   const [showUploadUI, setShowUploadUI] = useState(false);
   const [machine, setMachine] = useState("");
   const [testSite, setTestSite] = useState("");
@@ -17,15 +16,22 @@ const Dashboard = () => {
   const [chosenMachineData, setChosenMachineData] = useState(null);
 
   useEffect(() => {
+    console.log("User context:", currentUser);
     fetchRawMachines()
       .then((data) => {
-        setAllMachines(data);
-        console.log("Fetched machines:", data);
+        const assignedMachines = data.filter(
+          (machine) => machine.assignedEngineer === currentUser._id
+        );
+        if (assignedMachines.length === 0) {
+          console.warn("No machines assigned to the current user.");
+        }
+        setAllMachines(assignedMachines);
+        console.log("Fetched machines:", assignedMachines);
       })
       .catch((error) => {
         console.error("Error fetching machines:", error);
       });
-  }, []);
+  }, [currentUser]);
 
   const machines = allMachines.map((machine) => machine.name);
   const testSites =

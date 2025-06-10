@@ -40,6 +40,7 @@ const Login = () => {
         }
       );
       if (response.data) {
+        console.log("Login successful:", response.data);
         setCurrentUser(response.data); // Update user context
       }
       if (response.status === 200 && response.data.role === "admin") {
