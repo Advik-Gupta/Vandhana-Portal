@@ -14,6 +14,8 @@ import AdminProtectedRoutes from "./components/Pages/Admin Protected/AdminProtec
 import Dashboard from "./components/Pages/Machine/Dashboard";
 import TestSiteDetail from "./components/Pages/TestSite/TestSiteDetail";
 import DataUploadedDetail from "./components/Pages/DataUploadedDetail/DataUploadDetail";
+import EmployeeListDashBoard from "./components/Pages/Employee/EmployeeListDashBoard"
+import HomePageAdmin from "./components/Pages/AdminDashBoard/HomePageAdmin";
 
 function App() {
   const { user } = useContext(UserContext);
@@ -36,6 +38,7 @@ function App() {
       <Route path="/" element={<Dashboard />} />
       <Route path="/admin" element={<AdminProtectedRoutes />}>
         <Route path="/admin/machines" element={<MachinesOverview />} />
+        <Route path="/admin/employees" element={<EmployeeListDashBoard />} />
         <Route path="/admin/add-machine" element={<AddMachine />} />
         <Route path="/admin/machine/:id" element={<MachineDetail />} />
         <Route
