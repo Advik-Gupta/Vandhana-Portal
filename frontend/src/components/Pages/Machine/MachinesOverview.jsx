@@ -11,7 +11,7 @@ const MachinesOverview = () => {
     testSite: null,
     status: null,
   });
-
+  const [searchMachine,setSearchMachine] = useState("");
   const [allMachines, setAllMachines] = useState([]);
 
   useEffect(() => {
@@ -27,14 +27,37 @@ const MachinesOverview = () => {
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
+  const handleSearchMachineChange = (e)=>{
+    setSearchMachine(e.target.value)
+    console.log(allMachines)
+  }
+  // const filteredMachines = allMachines.filter((machine) => {
+  //   return (
+  //     (!filters.division || machine.division === filters.division) &&
+  //     (!filters.testSite || machine.testSite === filters.testSite) &&
+  //     (!filters.status || machine.status === filters.status)
+  //   );
+  // });
 
   const filteredMachines = allMachines.filter((machine) => {
-    return (
-      (!filters.division || machine.division === filters.division) &&
-      (!filters.testSite || machine.testSite === filters.testSite) &&
-      (!filters.status || machine.status === filters.status)
+  const matchesFilters =
+    (!filters.division || machine.division === filters.division) &&
+    (!filters.testSite || machine.testSite === filters.testSite) &&
+    (!filters.status || machine.status === filters.status);
+
+  const search = searchMachine.trim().toLowerCase();
+  const matchesSearch =
+    !search || (
+      machine.name?.toLowerCase().includes(search) ||
+      machine.id?.toString().toLowerCase().includes(search)
     );
-  });
+
+  return matchesFilters && matchesSearch;
+});
+
+console.log("Search value:", searchMachine);
+console.log("Filtered results:", filteredMachines);
+
 
   return (
     <div className="bg-gray-200 p-9 min-h-[100vh]">
@@ -43,6 +66,8 @@ const MachinesOverview = () => {
       <div className="mb-4 flex justify-between">
         <input
           type="text"
+          value={searchMachine}
+          onChange={handleSearchMachineChange}
           placeholder="Search by machine name or ID..."
           className="bg-gray-300 rounded p-2 w-100"
         />
@@ -82,8 +107,8 @@ const MachinesOverview = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredMachines.map((machine) => (
-              <tr key={machine.id} className="hover:bg-gray-100">
+            {filteredMachines.map((machine,index) => (
+              <tr key={index} className="hover:bg-gray-100">
                 <td className="py-2 px-4">
                   <Link
                     to={`/admin/machine/${machine.id}`}
