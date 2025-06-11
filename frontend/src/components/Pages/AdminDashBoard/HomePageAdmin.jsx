@@ -3,7 +3,6 @@ import TypeIndicator from "./TypeIndicator";
 import DataCard from "./DataCard";
 import SidebarSection from "./SidebarSection";
 import UpdatesSection from "./UpdatesSection";
-import sort from "../../../assets/sort.png"
 
 function HomePageAdmin() {
   const sidebarItems = [
@@ -55,22 +54,11 @@ function HomePageAdmin() {
                 label="Repainting"
                 className="w-[114px]"
               />
-
-              <div className="flex flex-wrap gap-10 w-full text-xs text-black max-md:max-w-full">
-                <TypeIndicator
-                  color="bg-[#58EEFF]"
-                  label="Grinding"
-                  className="flex-1"
-                />
-                <button>
-                  <img
-                  src={sort}
-                  className="object-contain shrink-0 aspect-[1.94] w-[97px]"
-                  alt="sort"
-                />
-                </button>
-                
-              </div>
+              <TypeIndicator
+                color="bg-[#58EEFF]"
+                label="Grinding"
+                className="flex-1 mb-3"
+              />
 
               {dataCards.map((card, index) => (
                 <DataCard
