@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 
 function DataCard({
   backgroundColor,
@@ -8,20 +9,25 @@ function DataCard({
   date,
   className = "",
 }) {
+  const navigate = useNavigate();
   return (
     <div
-      className={`flex flex-wrap justify-between px-11 py-3 w-full ${backgroundColor} rounded-3xl shadow-[0_4px_4px_rgba(0,0,0,0.25)] max-md:px-5 ${className}`}
+      className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-y-4 px-8 py-5 w-full ${backgroundColor} rounded-3xl shadow-lg max-md:px-5 ${className} cursor-pointer transition-all duration-300 hover:scale-105`}
     >
-      <div className="flex flex-col grow text-black w-fit max-md:w-full max-md:mb-4">
-        <div className="flex flex-col justify-center p-1 text-xl font-medium w-[150px] max-md:w-full">
-          <h3 className="py-2.5">{title}</h3>
-        </div>
-        <p className="py-2.5 text-base font-light">{subtitle}</p>
+      {/* Left section */}
+      <div className="flex flex-col text-black">
+        <h3 className="text-2xl leading-snug">
+          Update For: <span className="font-bold">{title}</span>
+        </h3>
+        <p className="text-md text-gray-800 mt-2">{subtitle}</p>
       </div>
 
-      <div className="flex flex-col items-end text-white whitespace-nowrap max-md:items-start max-md:text-left">
-        <p className="text-xl font-bold">{date}</p>
-        <p className="text-xl mt-16 max-md:mt-4">{uploadedBy}</p>
+      {/* Right section */}
+      <div className="flex flex-col items-end text-white text-right sm:items-end sm:text-right max-sm:items-start max-sm:text-left">
+        <p className="text-base font-semibold">{date}</p>
+        <p className="text-sm font-medium mt-2 opacity-90">
+          Data uploaded by {uploadedBy}
+        </p>
       </div>
     </div>
   );

@@ -195,8 +195,6 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       (p) => p.pointName === `${testSiteNumber}.${pointNumber}`
     );
 
-    console.log(point);
-
     for (const file of req.files) {
       const [category, phase] = file.fieldname.split("_"); // e.g. "dptTest_1_pre"
       const namesOfTests = {

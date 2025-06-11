@@ -89,6 +89,7 @@ export const authUser = asyncHandler(async (req, res) => {
       email: user.email,
       role: user.role,
       phoneNumber: user.phoneNumber,
+      notifications: user.notifications,
     });
   } else {
     res.status(401);

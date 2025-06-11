@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ViewSection from "./ViewSection";
 import arrow from "../../assets/arrow.svg";
+import { UserContext } from "../../contexts/user.context";
 
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -10,6 +11,7 @@ function DataUploadForm() {
   const { machineID, testSiteNumber, pointNumber } = useParams();
   const [machineName, setMachineName] = useState("");
   const [testSite, setTestSite] = useState(testSiteNumber);
+  const { currentUser } = useContext(UserContext);
 
   const location = useLocation();
   const { cycle, cycleNumber } = location.state || {};
@@ -108,6 +110,22 @@ function DataUploadForm() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+
+      const notify = await axios.post(
+        `http://localhost:8080/api/v1/notifications/send`,
+        {
+          message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName}, ${testSiteNumber}, ${pointNumber} has been updated by ${currentUser._id}`,
+          type:
+            cycle === "Repaint"
+              ? "repaintingCycleUpdate"
+              : "grindingCycleUpdate",
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
       alert("Upload success!");
     } catch (err) {
       console.error(err);

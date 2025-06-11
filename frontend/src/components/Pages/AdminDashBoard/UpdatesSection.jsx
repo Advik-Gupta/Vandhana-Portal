@@ -9,23 +9,10 @@ function UpdatesSection({ updates }) {
 
       {updates.map((update, index) => (
         <div key={index} className="mt-3 ml-2.5 first:mt-3">
-          <div className="flex gap-2">
-            <div className="flex shrink-0 self-start rounded-full bg-neutral-400 h-[9px] w-[9px]" />
-            <p className="basis-auto">{update.text}</p>
+          <div className="flex items-center gap-2">
+            <div className="h-[9px] w-[9px] rounded-full bg-neutral-400" />
+            <p className="basis-auto">{update.message}</p>
           </div>
-          <button>
-            {update.isRejected && (
-              <div className="flex gap-1 mt-1 ml-7 text-xs whitespace-nowrap text-zinc-600 max-md:ml-2.5">
-                <span className="underline">Reupload</span>
-
-                <img
-                  src={arrow}
-                  className="object-contain shrink-0 self-start w-2 mt-1 aspect-square"
-                  alt="Reupload icon"
-                />
-              </div>
-            )}
-          </button>
         </div>
       ))}
     </section>

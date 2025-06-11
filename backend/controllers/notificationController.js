@@ -2,7 +2,12 @@ import User from "../models/userModel.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 
 export const sendNotification = asyncHandler(async (req, res) => {
-  const { userId, message, type = "info" } = req.body;
+  const { message, type = "info" } = req.body;
+  let { userId } = req.body;
+
+  if (!userId) {
+    userId = "68471db39c241a87a48e338f";
+  }
 
   // Create a new notification
   const notification = {

@@ -34,7 +34,12 @@ const UserSchema = new mongoose.Schema(
         },
         type: {
           type: String,
-          enum: ["info", "warning"],
+          enum: [
+            "info",
+            "warning",
+            "repaintingCycleUpdate",
+            "grindingCycleUpdate",
+          ],
           default: "info",
         },
         createdAt: {

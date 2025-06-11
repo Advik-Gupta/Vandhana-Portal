@@ -1,43 +1,81 @@
-import * as React from "react";
+import React, { useEffect, useContext, useState } from "react";
 import TypeIndicator from "./TypeIndicator";
 import DataCard from "./DataCard";
 import SidebarSection from "./SidebarSection";
 import UpdatesSection from "./UpdatesSection";
 
+import { UserContext } from "../../../contexts/user.context";
+
 function HomePageAdmin() {
+  const { currentUser } = useContext(UserContext);
+  const [dataUpdates, setDataUpdates] = useState(null);
+  const [otherUpdates, setOtherUpdates] = useState(null);
+
   const sidebarItems = [
     { title: "Machines overview", navigate: "/admin/machines" },
     { title: "Employee Directory", navigate: "/admin/employees" },
   ];
 
-  const updates = [
-    { text: "Data approved for Test site no T00", isRejected: false },
-    { text: "Data approved for Test site no T10", isRejected: false },
-    { text: "Data rejected for Test site no T05", isRejected: true },
-  ];
-  const dataCards = [
-    {
-      type: "repainting",
-      title: "RGI-96-01 NR",
-      subtitle: "Test site No T01 > Point Name > Grind Cycle 1",
-      uploadedBy: "Uploaded by Person A",
-      date: "01/01/01",
-    },
-    {
-      type: "grinding",
-      title: "RGI-96-01 NR",
-      subtitle: "Test site No T01",
-      uploadedBy: "Uploaded by Person B",
-      date: "01/01/01",
-    },
-    {
-      type: "grinding",
-      title: "RGI-96-01 NR",
-      subtitle: "Test site No T01",
-      uploadedBy: "Reuploaded by Person C",
-      date: "01/01/01",
-    },
-  ];
+  function formatNotification(notification) {
+    const { createdAt, message, type } = notification;
+
+    // Match cycleType, cycleNumber, title, testSite, pointNumber, uploaderId
+    const match = message.match(
+      /Data for (\w+) cycle (\d+) of - ([^,]+), ([^,]+), (\d+) has been updated by (\w+)/
+    );
+
+    if (!match) {
+      throw new Error("Message format not recognized");
+    }
+
+    const [
+      _,
+      cycleType, // Grind / Repaint
+      cycleNumber,
+      title,
+      testSite,
+      pointNumber,
+      uploaderId,
+    ] = match;
+
+    const pointName = `${testSite}.${pointNumber}`;
+
+    const dateObj = new Date(createdAt);
+    const formattedDate = dateObj
+      .toLocaleDateString("en-GB")
+      .split("/")
+      .map((part, i) => (i === 2 ? part.slice(-2) : part))
+      .join("/");
+
+    return {
+      type: cycleType === "Grind" ? "grinding" : "repainting",
+      title: title.trim(),
+      subtitle: `Test site No ${testSite} > ${pointName} > ${cycleType} Cycle ${cycleNumber}`,
+      uploadedBy: `${uploaderId}`,
+      date: formattedDate,
+    };
+  }
+
+  useEffect(() => {
+    currentUser?.notifications?.reverse().map((notification) => {
+      if (notification.type === "info" || notification.type === "warning") {
+        if (otherUpdates && otherUpdates.length >= 10) {
+          setOtherUpdates((prev) => {
+            const newUpdates = [...(prev || [])];
+            newUpdates.shift();
+            return [...newUpdates, notification];
+          });
+        } else {
+          setOtherUpdates((prev) => [...(prev || []), notification]);
+        }
+      } else {
+        setDataUpdates((prev) => [
+          ...(prev || []),
+          formatNotification(notification),
+        ]);
+      }
+    });
+  }, [currentUser]);
 
   return (
     <main className="flex overflow-hidden flex-col px-11 pt-7 pb-44 bg-white max-md:px-5 max-md:pb-24">
@@ -45,7 +83,7 @@ function HomePageAdmin() {
         Dashboard
       </header>
 
-      <section className="mt-16 ml-2.5 max-md:mt-10 max-md:max-w-full">
+      <section className="ml-2.5 max-md:mt-10 max-md:max-w-full">
         <div className="flex gap-5 max-md:flex-col">
           <div className="w-[71%] max-md:ml-0 max-md:w-full">
             <div className="self-stretch my-auto w-full max-md:mt-10 max-md:max-w-full">
@@ -60,25 +98,41 @@ function HomePageAdmin() {
                 className="flex-1 mb-3"
               />
 
-              {dataCards.map((card, index) => (
-                <DataCard
-                  key={index}
-                  backgroundColor={
-                    card.type === "grinding" ? "bg-[#58EEFF]" : "bg-[#FF9822]"
-                  }
-                  title={card.title}
-                  subtitle={card.subtitle}
-                  uploadedBy={card.uploadedBy}
-                  date={card.date}
-                  className={index !== 0 ? "mt-9" : "mt-2"}
-                />
-              ))}
+              {dataUpdates ? (
+                <div className="flex flex-col gap-5 mb-5">
+                  {dataUpdates.map((card, index) => (
+                    <DataCard
+                      key={index}
+                      backgroundColor={
+                        card.type === "grinding"
+                          ? "bg-[#58EEFF]"
+                          : "bg-[#FF9822]"
+                      }
+                      title={card.title}
+                      subtitle={card.subtitle}
+                      uploadedBy={card.uploadedBy}
+                      date={card.date}
+                      className={index !== 0 ? "mt-3" : "mt-2"}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-center mt-5">
+                  No data updates available.
+                </div>
+              )}
             </div>
           </div>
 
           <aside className="ml-5 w-[29%] flex flex-col gap-6 max-md:ml-0 max-md:w-full">
             <SidebarSection items={sidebarItems} />
-            <UpdatesSection updates={updates} />
+            {otherUpdates && otherUpdates.length > 0 ? (
+              <UpdatesSection updates={otherUpdates} />
+            ) : (
+              <div className="text-gray-500 text-center mt-5">
+                No updates available.
+              </div>
+            )}
           </aside>
         </div>
       </section>
