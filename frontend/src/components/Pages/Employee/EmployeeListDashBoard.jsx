@@ -65,10 +65,9 @@ const EmployeeListDashBoard = () => {
         />
       </div>
 
-      
       <div className="flex flex-col lg:flex-row gap-6">
         <div className={`${selectedEmployee ? "w-full lg:w-2/3" : "w-full"}`}>
-          <div className="mb-4 flex flex-wrap justify-end gap-2">
+          {/* <div className="mb-4 flex flex-wrap justify-end gap-2">
             <DropdownButton
               text="Role"
               type="role"
@@ -84,16 +83,16 @@ const EmployeeListDashBoard = () => {
               type="status"
               onSelect={handleFilterChange}
             />
-          </div>
+          </div> */}
           <div className="overflow-x-auto rounded-lg">
             <table className="min-w-full bg-white text-sm sm:text-base">
               <thead>
                 <tr className="bg-black text-white">
                   <th className="py-2 px-4 text-left">Name</th>
                   <th className="py-2 px-4 text-left">ID</th>
-                  <th className="py-2 px-4 text-left">Site</th>
+                  {/* <th className="py-2 px-4 text-left">Site</th>
                   <th className="py-2 px-4 text-left">Status</th>
-                  <th className="py-2 px-4 text-left">Actions</th>
+                  <th className="py-2 px-4 text-left">Actions</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -104,7 +103,7 @@ const EmployeeListDashBoard = () => {
                   >
                     <td className="py-2 px-4">{employee.name}</td>
                     <td className="py-2 px-4">{employee._id}</td>
-                    <td className="py-2 px-4">{employee.site}</td>
+                    {/* <td className="py-2 px-4">{employee.site}</td>
                     <td className="py-2 px-4">{employee.status}</td>
                     <td className="py-2 px-4">
                       <button
@@ -116,7 +115,7 @@ const EmployeeListDashBoard = () => {
                       >
                         View/Edit
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

@@ -1,4 +1,4 @@
-import React, { useState, useId } from "react";
+import React, { useId } from "react";
 
 function ViewSection({
   title,
@@ -8,18 +8,24 @@ function ViewSection({
   onPreChange,
   onPostChange,
 }) {
-  const uniqueId = useId(); 
+  const uniqueId = useId();
+
   const handlePreFileSelect = (e) => {
-    const selectedFile = e.target.files[0]; 
-    onPreChange(title, selectedFile); 
+    const selectedFile = e.target.files[0];
+    onPreChange(title, selectedFile);
   };
 
   const handlePostFileSelect = (e) => {
     const selectedFile = e.target.files[0];
-    onPostChange(title, selectedFile); 
+    onPostChange(title, selectedFile);
   };
+
   const preId = `prephoto-${uniqueId}`;
   const postId = `postphoto-${uniqueId}`;
+
+  const preButtonColor = prePhoto ? "bg-green-600" : "bg-black";
+  const postButtonColor = postPhoto ? "bg-green-600" : "bg-black";
+
   return (
     <section
       className={`flex flex-wrap gap-5 justify-between px-10 py-4 w-full font-semibold bg-[#E9E9E9] rounded-xl max-w-[1307px] max-md:px-5 max-md:max-w-full ${className}`}
@@ -30,7 +36,7 @@ function ViewSection({
         <div>
           <label htmlFor={preId}>
             <div
-              className={`flex flex-col justify-center items-start px-8 py-2 bg-black rounded-3xl max-md:px-5`}
+              className={`flex flex-col justify-center items-start px-8 py-2 rounded-3xl cursor-pointer ${preButtonColor} max-md:px-5 transition-colors duration-200`}
             >
               Pre Photo +
             </div>
@@ -44,7 +50,7 @@ function ViewSection({
         <div>
           <label htmlFor={postId}>
             <div
-              className={`flex flex-col justify-center items-start px-8 py-2 bg-black rounded-3xl max-md:px-5`}
+              className={`flex flex-col justify-center items-start px-8 py-2 rounded-3xl cursor-pointer ${postButtonColor} max-md:px-5 transition-colors duration-200`}
             >
               Post Photo +
             </div>

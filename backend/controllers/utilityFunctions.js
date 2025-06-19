@@ -98,8 +98,26 @@ export const generateTestSites = (num, type) => {
       nextRepaintingDueDate: new Date(),
       currentGrindingCycle: 0,
       currentRepaintingCycle: 0,
+      status: "active",
       points: generatePoints(`T${i}`, type),
     });
   }
   return testSites;
+};
+
+export const getNextCycleDate = (createdAt, gmtPerYear, cycleType) => {
+  const date = new Date(createdAt);
+
+  if (cycleType === "repainting") {
+    date.setUTCMonth(date.getUTCMonth() + 6);
+    return date.toISOString(); // full ISO format
+  }
+
+  if (cycleType === "grinding") {
+    const daysForOneGmt = (1 / gmtPerYear) * 365.25;
+    date.setUTCDate(date.getUTCDate() + Math.round(daysForOneGmt));
+    return date.toISOString(); // full ISO format
+  }
+
+  throw new Error("Invalid cycleType. Must be 'grinding' or 'repainting'.");
 };

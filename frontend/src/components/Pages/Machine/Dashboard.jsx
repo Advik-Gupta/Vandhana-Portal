@@ -44,12 +44,37 @@ const Dashboard = () => {
       ?.testSites.find((site) => site.testSiteNumber === testSite)
       ?.points.map((pointToFind) => pointToFind.pointName) || [];
   const cycles = ["Grind", "Repaint"];
-  const cycleNumbers = ["1", "2", "3", "4", "5"];
+
+  const grindCycleNumbers = Array.from(
+    {
+      length:
+        (allMachines
+          .find((machineToFind) => machineToFind.name === machine)
+          ?.testSites.find((site) => site.testSiteNumber === testSite)
+          ?.currentGrindingCycle || 1) + 1,
+    },
+    (_, i) => i + 1
+  );
+  const repaintCycleNumbers = Array.from(
+    {
+      length:
+        (allMachines
+          .find((machineToFind) => machineToFind.name === machine)
+          ?.testSites.find((site) => site.testSiteNumber === testSite)
+          ?.currentRepaintingCycle || 1) + 1,
+    },
+    (_, i) => i + 1
+  );
 
   const toggleUploadUI = () => setShowUploadUI((prev) => !prev);
 
   const handleMachineChange = (e) => {
     setMachine(e.target.value);
+    setTestSite("");
+    setPoint("");
+    setCycle("");
+    setCycleNumber("");
+    setChosenMachineData(null);
     const chosenMachine = allMachines.find(
       (machineToFind) => machineToFind.name === e.target.value
     );
@@ -97,7 +122,12 @@ const Dashboard = () => {
               <select
                 className="w-full border rounded-xl px-4 py-3"
                 value={testSite}
-                onChange={(e) => setTestSite(e.target.value)}
+                onChange={(e) => (
+                  setTestSite(e.target.value),
+                  setPoint(""),
+                  setCycle(""),
+                  setCycleNumber("")
+                )}
               >
                 <option value="">-- Select Site --</option>
                 {testSites.map((item, idx) => (
@@ -113,7 +143,9 @@ const Dashboard = () => {
               <select
                 className="w-full border rounded-xl px-4 py-3"
                 value={point}
-                onChange={(e) => setPoint(e.target.value)}
+                onChange={(e) => (
+                  setPoint(e.target.value), setCycle(""), setCycleNumber("")
+                )}
               >
                 <option value="">-- Select Point --</option>
                 {points.map((item, idx) => (
@@ -129,7 +161,7 @@ const Dashboard = () => {
               <select
                 className="w-full border rounded-xl px-4 py-3"
                 value={cycle}
-                onChange={(e) => setCycle(e.target.value)}
+                onChange={(e) => (setCycle(e.target.value), setCycleNumber(""))}
               >
                 <option value="">-- Select Cycle --</option>
                 {cycles.map((item, idx) => (
@@ -150,7 +182,10 @@ const Dashboard = () => {
                 onChange={(e) => setCycleNumber(e.target.value)}
               >
                 <option value="">-- Select Cycle Number --</option>
-                {cycleNumbers.map((item, idx) => (
+                {(cycle === "Grind"
+                  ? grindCycleNumbers
+                  : repaintCycleNumbers
+                ).map((item, idx) => (
                   <option key={idx} value={item}>
                     {item}
                   </option>

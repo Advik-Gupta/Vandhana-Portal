@@ -102,6 +102,7 @@ function DataUploadForm() {
       formData.append("curveNumber", testSite.curveNumber);
       formData.append("rail", testSite.curveType);
       formData.append("ohePoleNumber", "2(8-10)");
+      formData.append("uploadedBy", currentUser._id);
 
       const res = await axios.post(
         `http://localhost:8080/api/v1/machines/${machineID}/upload`,
@@ -112,9 +113,9 @@ function DataUploadForm() {
       );
 
       const notify = await axios.post(
-        `http://localhost:8080/api/v1/notifications/send`,
+        `http://localhost:8080/api/v1/notifications/send?to=admin`,
         {
-          message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName}, ${testSiteNumber}, ${pointNumber} has been updated by ${currentUser._id}`,
+          message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName} {${machineID}}, ${testSiteNumber}, ${pointNumber} has been updated by ${currentUser._id}`,
           type:
             cycle === "Repaint"
               ? "repaintingCycleUpdate"

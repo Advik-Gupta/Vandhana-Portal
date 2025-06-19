@@ -1,25 +1,31 @@
 import mongoose from "mongoose";
 
-const grindCycleSchema = new mongoose.Schema({
-  pre: {
-    type: Map,
-    of: [String],
+const grindCycleSchema = new mongoose.Schema(
+  {
+    pre: {
+      type: Map,
+      of: [String],
+    },
+    post: {
+      type: Map,
+      of: [String],
+    },
+    uploadBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "employees",
+      required: true,
+      default: "684c91abfe1841850a9e9702",
+    },
+    status: {
+      type: String,
+      enum: ["issues", "approved", "closed", "pending"],
+      default: "pending",
+    },
   },
-  post: {
-    type: Map,
-    of: [String],
-  },
-  uploadBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "employees",
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["issues", "approved", "closed", "pending"],
-    default: "Pending",
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const testSitePointSchema = new mongoose.Schema(
   {
@@ -113,6 +119,11 @@ const testSiteSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
     points: [testSitePointSchema],
   },
   {
@@ -137,6 +148,9 @@ const machineSchema = new mongoose.Schema(
       required: true,
     },
     testSites: [testSiteSchema],
+  },
+  {
+    timestamps: true,
   },
   {
     timestamps: true,

@@ -35,7 +35,8 @@ export const fetchMachines = async () => {
           kmFrom: testSite.kmFrom,
           kmTo: testSite.kmTo,
           division: testSite.division,
-          dueDate: machine.nextGrindingDueDate || "N/A",
+          nextGrindingDueDate: testSite.nextGrindingDueDate,
+          nextRepaintingDueDate: testSite.nextRepaintingDueDate,
         });
       });
     });

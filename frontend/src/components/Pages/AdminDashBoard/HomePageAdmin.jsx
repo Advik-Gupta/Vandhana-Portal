@@ -19,9 +19,8 @@ function HomePageAdmin() {
   function formatNotification(notification) {
     const { createdAt, message, type } = notification;
 
-    // Match cycleType, cycleNumber, title, testSite, pointNumber, uploaderId
     const match = message.match(
-      /Data for (\w+) cycle (\d+) of - ([^,]+), ([^,]+), (\d+) has been updated by (\w+)/
+      /Data for (\w+) cycle (\d+) of - ([^{,]+) \{([^}]+)\}, ([^,]+), (\d+) has been updated by (\w+)/
     );
 
     if (!match) {
@@ -30,9 +29,10 @@ function HomePageAdmin() {
 
     const [
       _,
-      cycleType, // Grind / Repaint
+      cycleType,
       cycleNumber,
       title,
+      machineID,
       testSite,
       pointNumber,
       uploaderId,
@@ -53,6 +53,7 @@ function HomePageAdmin() {
       subtitle: `Test site No ${testSite} > ${pointName} > ${cycleType} Cycle ${cycleNumber}`,
       uploadedBy: `${uploaderId}`,
       date: formattedDate,
+      url: `/admin/upload-data/${machineID}/${testSite}/${pointNumber}`,
     };
   }
 

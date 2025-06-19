@@ -6,7 +6,7 @@ import User from "../models/userModel.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { uploadToR2 } from "./r2uploader.js";
 
-import { generateTestSites } from "./utilityFunctions.js";
+import { generateTestSites, getNextCycleDate } from "./utilityFunctions.js";
 
 // @desc    Fetch all machines
 // @route   GET /api/v1/machines
@@ -175,6 +175,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
     curveNumber,
     rail,
     ohePoleNumber,
+    uploadedBy,
   } = req.body;
 
   let uploadDate = new Date();
@@ -195,6 +196,31 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       (p) => p.pointName === `${testSiteNumber}.${pointNumber}`
     );
 
+    testSite.currentGrindingCycle =
+      cycleType === "grindCycles" ? cycleNumber : testSite.currentGrindingCycle;
+    testSite.currentRepaintingCycle =
+      cycleType === "repaintCycles"
+        ? cycleNumber
+        : testSite.currentRepaintingCycle;
+
+    const dataUploadTime = new Date().toISOString();
+
+    if (cycleType === "grindCycles") {
+      testSite.nextGrindingDueDate = getNextCycleDate(
+        dataUploadTime,
+        testSite.gmt,
+        "grinding"
+      );
+    }
+
+    if (cycleType === "repaintCycles") {
+      testSite.nextRepaintingDueDate = getNextCycleDate(
+        dataUploadTime,
+        testSite.gmt,
+        "repainting"
+      );
+    }
+
     for (const file of req.files) {
       const [category, phase] = file.fieldname.split("_"); // e.g. "dptTest_1_pre"
       const namesOfTests = {
@@ -214,12 +240,49 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       }_${curveNumber || "N/A"}_${ohePoleNumber || "N/A"}_${
         category || "N/A"
       }_${phase || "N/A"}_${formattedDate || "N/A"}`;
-      const url = await uploadToR2(file.buffer, customName, file.mimetype);
+      // const url = await uploadToR2(file.buffer, customName, file.mimetype);
+      const url =
+        "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1";
 
-      point[cycleType]
-        .get(cycleNumber)
-        [phase].get(namesOfTests[category])
-        .push(url);
+      console.log(point[cycleType].get("2"));
+
+      if (point[cycleType].get(cycleNumber) === undefined) {
+        point[cycleType].set(cycleNumber, {
+          pre: {
+            dptTest: [],
+            topView: [],
+            gaugeView: [],
+            longitudinalView: [],
+            contactBand: [],
+            roughness: [],
+            hardness: [],
+            starGauge: [],
+          },
+          post: {
+            dptTest: [],
+            topView: [],
+            gaugeView: [],
+            longitudinalView: [],
+            contactBand: [],
+            roughness: [],
+            hardness: [],
+            starGauge: [],
+          },
+          uploadBy: uploadedBy,
+          status: "pending",
+          createdAt: dataUploadTime,
+        });
+        // now we can push the url to the correct category and phase
+        point[cycleType]
+          .get(cycleNumber)
+          [phase].get(namesOfTests[category])
+          .push(url);
+      } else {
+        point[cycleType]
+          .get(cycleNumber)
+          [phase].get(namesOfTests[category])
+          .push(url);
+      }
     }
 
     await machine.save();

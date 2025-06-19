@@ -22,9 +22,10 @@ const machineTypes = {
   "CMRL (VRA)": 6,
 };
 
-function getRandomFutureDate(daysAhead = 180) {
+function getRandomDate(daysRange = 180) {
   const now = new Date();
-  const randomDays = Math.floor(Math.random() * daysAhead) + 1; // 1 to daysAhead
+  const randomDays =
+    Math.floor(Math.random() * (2 * daysRange + 1)) - daysRange;
   now.setDate(now.getDate() + randomDays);
   return now;
 }
@@ -34,160 +35,6 @@ const generatePoints = (testSiteName, engineerId, type) => {
   for (let i = 1; i <= machineTypes[type]; i++) {
     points.push({
       pointName: `${testSiteName}.${i}`,
-      grindCycles: new Map([
-        [
-          "1",
-          {
-            pre: {
-              dptTest: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-              ],
-              topView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
-              ],
-              gaugeView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
-              ],
-              longitudinalView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
-              ],
-              contactBand: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
-              ],
-              roughness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
-              ],
-              hardness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
-              ],
-              starGauge: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
-              ],
-            },
-            post: {
-              dptTest: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-              ],
-              topView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
-              ],
-              gaugeView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
-              ],
-              longitudinalView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
-              ],
-              contactBand: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
-              ],
-              roughness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
-              ],
-              hardness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
-              ],
-              starGauge: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
-              ],
-            },
-            uploadBy: engineerId,
-            status: "pending",
-          },
-        ],
-      ]),
-      repaintCycles: new Map([
-        [
-          "1",
-          {
-            pre: {
-              dptTest: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-              ],
-              topView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
-              ],
-              gaugeView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
-              ],
-              longitudinalView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
-              ],
-              contactBand: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
-              ],
-              roughness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
-              ],
-              hardness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
-              ],
-              starGauge: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
-              ],
-            },
-            post: {
-              dptTest: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+2",
-              ],
-              topView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Top+View+Image+2",
-              ],
-              gaugeView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Gauge+View+Image+2",
-              ],
-              longitudinalView: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Longitudinal+View+Image+2",
-              ],
-              contactBand: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Contact+Band+Image+2",
-              ],
-              roughness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Roughness+Image+2",
-              ],
-              hardness: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Hardness+Image+2",
-              ],
-              starGauge: [
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+1",
-                "https://dummyimage.com/600x400/000/fff&text=Pre+Star+Gauge+Image+2",
-              ],
-            },
-            uploadBy: engineerId,
-            status: "pending",
-          },
-        ],
-      ]),
     });
   }
   return points;
@@ -208,10 +55,11 @@ const generateTestSites = (num, engineerID, machineType) => {
       kmFrom: 191.507,
       kmTo: 191.827,
       gmt: 37.65,
-      nextGrindingDueDate: getRandomFutureDate(90),
-      nextRepaintingDueDate: getRandomFutureDate(90),
+      nextGrindingDueDate: getRandomDate(90),
+      nextRepaintingDueDate: getRandomDate(90),
       currentGrindingCycle: 0,
       currentRepaintingCycle: 0,
+      status: "active",
       points: generatePoints(`T${i}`, engineerID, machineType),
     });
   }
