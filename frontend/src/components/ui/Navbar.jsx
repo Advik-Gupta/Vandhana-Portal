@@ -27,6 +27,14 @@ const Navbar = () => {
         </div>
 
         <div className="flex space-x-4">
+          <button
+            onClick={() =>
+              navigate(currentUser?.role === "admin" ? "/admin/home" : "/")
+            }
+            className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded hover:bg-blue-600 transition duration-200"
+          >
+            Home
+          </button>
           {currentUser ? (
             <>
               <span className="text-white">
