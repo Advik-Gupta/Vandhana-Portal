@@ -83,6 +83,9 @@ export const authUser = asyncHandler(async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
+    user.firstLogin = false;
+    await user.save();
+
     res.json({
       _id: user._id,
       name: user.name,
@@ -90,6 +93,7 @@ export const authUser = asyncHandler(async (req, res) => {
       role: user.role,
       phoneNumber: user.phoneNumber,
       notifications: user.notifications,
+      firstLogin: user.firstLogin,
     });
   } else {
     res.status(401);

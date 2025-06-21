@@ -1,19 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
+import { UserContext } from "../../../contexts/user.context";
+
+const ChangePassword = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phoneNumber: "",
+    oldPassword: "",
+    newPassword: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { currentUser } = useContext(UserContext);
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); //
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,15 +29,23 @@ const Signup = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/users/register",
-        formData,
+      const response = await axios.put(
+        "http://localhost:8080/api/v1/users/profile",
         {
-          withCredentials: true, // Include cookies in requests
+          newPassword: formData.newPassword,
+          oldPassword: formData.oldPassword,
+        },
+        {
+          withCredentials: true,
         }
       );
-      if (response.status === 201) {
-        navigate("/login");
+      if (response.data) {
+        console.log("Password changed successfully:", response.data);
+        {
+          currentUser.role === "admin"
+            ? navigate("/admin/home")
+            : navigate("/");
+        }
       }
     } catch (error) {
       if (
@@ -47,7 +55,7 @@ const Signup = () => {
       ) {
         setError(error.response.data.message);
       } else {
-        setError("Signup failed. Please try again.");
+        setError("Login failed. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -57,9 +65,7 @@ const Signup = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-200">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Create new users
-        </h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">Change Password</h2>
         {error && (
           <div className="mb-4 text-red-600 text-center bg-red-100 p-2 rounded">
             {error}
@@ -67,27 +73,19 @@ const Signup = () => {
         )}
         <form onSubmit={handleSubmit}>
           <input
-            type="text"
-            placeholder="Full Name"
-            name="name"
-            value={formData.name}
+            type="oldPassword"
+            name="oldPassword"
+            value={formData.oldPassword}
             onChange={handleChange}
+            placeholder="Old Password"
             className="w-full p-3 mb-4 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={formData.email}
+            type="newPassword"
+            name="newPassword"
+            value={formData.newPassword}
             onChange={handleChange}
-            className="w-full p-3 mb-4 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="tel"
-            placeholder="Phone Number"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
+            placeholder="New Password"
             className="w-full p-3 mb-4 rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
@@ -95,7 +93,7 @@ const Signup = () => {
             className="w-full bg-black text-white p-3 rounded hover:bg-gray-800"
             disabled={loading}
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {loading ? "Updating Password..." : "Update Password"}
           </button>
         </form>
       </div>
@@ -103,4 +101,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default ChangePassword;

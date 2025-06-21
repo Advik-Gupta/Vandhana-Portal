@@ -35,6 +35,20 @@ const Navbar = () => {
           >
             Home
           </button>
+          <button
+            onClick={() => navigate("/change-password")}
+            className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded hover:bg-blue-600 transition duration-200"
+          >
+            Change Password
+          </button>
+          {currentUser?.role === "admin" && (
+            <button
+              onClick={() => navigate("/admin/signup")}
+              className="bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded hover:bg-blue-600 transition duration-200"
+            >
+              Create Users
+            </button>
+          )}
           {currentUser ? (
             <>
               <span className="text-white">

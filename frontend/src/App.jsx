@@ -11,6 +11,7 @@ import AddMachine from "./components/Pages/Machine/AddMachine";
 import DataUploadForm from "./components/DataUploadMachine/DataUploadForm";
 import Login from "./components/Pages/Auth/Login";
 import Signup from "./components/Pages/Auth/Signup";
+import ChangePassword from "./components/Pages/Auth/ChangePassword";
 import AdminProtectedRoutes from "./components/Pages/Admin Protected/AdminProtected";
 import Dashboard from "./components/Pages/Machine/Dashboard";
 import TestSiteDetail from "./components/Pages/TestSite/TestSiteDetail";
@@ -39,13 +40,16 @@ function App() {
       {currentUser ? <Navbar /> : <></>}
       <Routes className="font-[Montserrat]">
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        {currentUser && (
+          <Route path="/change-password" element={<ChangePassword />} />
+        )}
         <Route
           path="/upload-data/:machineID/:testSiteNumber/:pointNumber"
           element={<DataUploadForm />}
         />
         <Route path="/" element={<Dashboard />} />
         <Route path="/admin" element={<AdminProtectedRoutes />}>
+          <Route path="/admin/signup" element={<Signup />} />
           <Route path="/admin/home" element={<HomePageAdmin />} />
           <Route path="/admin/machines" element={<MachinesOverview />} />
           <Route path="/admin/employees" element={<EmployeeListDashBoard />} />

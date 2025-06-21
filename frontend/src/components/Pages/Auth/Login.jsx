@@ -46,7 +46,11 @@ const Login = () => {
       if (response.status === 200 && response.data.role === "admin") {
         navigate("/admin/machines");
       } else {
-        navigate("/");
+        if (response.status === 200 && response.data.firstLogin) {
+          navigate("/change-password");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error) {
       if (
@@ -97,12 +101,6 @@ const Login = () => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p className="mt-4 text-sm text-center">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-600 hover:underline">
-            Sign Up
-          </Link>
-        </p>
       </div>
     </div>
   );

@@ -311,6 +311,7 @@ export const updateTestSiteData = asyncHandler(async (req, res) => {
     kmTo,
     nextGrindingDueDate,
     nextRepaintingDueDate,
+    status,
   } = req.body.updatedTestSiteData;
 
   try {
@@ -334,6 +335,7 @@ export const updateTestSiteData = asyncHandler(async (req, res) => {
     testSite.station = station;
     testSite.kmFrom = kmFrom;
     testSite.kmTo = kmTo;
+    testSite.status = status;
     testSite.nextGrindingDueDate = nextGrindingDueDate
       ? new Date(nextGrindingDueDate)
       : null;
@@ -350,11 +352,11 @@ export const updateTestSiteData = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update status of a test site
+// @desc    Update status of a test point data
 // @route   PUT /api/v1/machines/:machineId/:testSiteNumber/:pointNumber
 // @access  Admin
 
-export const updateTestSiteStatus = asyncHandler(async (req, res) => {
+export const updateTestPointDataStatus = asyncHandler(async (req, res) => {
   const { id, testSiteNumber, pointNo } = req.params;
   const { status, cycleId, cycleType } = req.body;
 

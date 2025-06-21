@@ -2,21 +2,16 @@ import React from "react";
 import Button from "./Button";
 import profileIcon from "../../../assets/profileIcon.svg";
 import DetailRow from "./DetailRow";
-import ActivityItem from "./ActivityItem";
 
 const EmployeeCard = ({
   name = "Employee 4",
   _id = "111111",
   role = "Technician",
-  status = "Inactive",
   phoneNumber = "1234567890",
-  activities = [
-    "Uploaded data for site A on 1/1/1",
-    "Reuploaded data for site B on 2/1/1",
-  ],
 }) => {
-  const onAdminAccess = () => {};
+  const onAccessChange = (type) => {};
   const onEdit = () => {};
+  const onDelete = () => {};
 
   return (
     <div className="shrink-0 h-auto w-[400px] sm:w-[360px] xs:w-[320px] bg-[#D9D9D9] rounded-3xl p-6 sm:p-5 xs:p-4 flex flex-col justify-between gap-4">
@@ -37,19 +32,20 @@ const EmployeeCard = ({
       </header>
       <section className="flex flex-col gap-2 xs:gap-4">
         <DetailRow label="Role" value={role} />
-        <DetailRow label="Status" value={status} />
         <DetailRow label="Contact" value={phoneNumber} />
       </section>
 
-      <section className="flex flex-col gap-3 xs:gap-2">
-        {activities.map((activity, index) => (
-          <ActivityItem key={index} text={activity} />
-        ))}
-      </section>
-
-      <div className="flex justify-between mt-2">
-        <Button text="Give Admin Access" onClick={onAdminAccess} />
-        <Button text="Edit/Remove" onClick={onEdit} />
+      <div className="flex flex-col gap-2 xs:gap-4">
+        <Button
+          text="Give Admin Access"
+          onClick={() => onAccessChange("admin")}
+        />
+        <Button
+          text="Give Supervisor Access"
+          onClick={() => onAccessChange("supervisor")}
+        />
+        <Button text="Edit" onClick={onEdit} />
+        <Button text="Delete" onClick={onDelete} />
       </div>
     </div>
   );

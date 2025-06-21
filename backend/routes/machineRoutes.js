@@ -13,7 +13,7 @@ import {
   createMachine,
   uploadMachineData,
   updateTestSiteData,
-  updateTestSiteStatus,
+  updateTestPointDataStatus,
 } from "../controllers/machineController.js";
 
 router.route("/").get(getMachines).post(createMachine);
@@ -21,6 +21,6 @@ router.route("/:id").get(getMachineById);
 router.post("/:id/upload", upload.any(), uploadMachineData);
 router.route("/:id/date").get(getLatestDueDate).patch(updateLatestDueDate);
 router.route("/:id/:testSiteNumber").put(updateTestSiteData);
-router.route("/:id/:testSiteNumber/:pointNo").put(updateTestSiteStatus);
+router.route("/:id/:testSiteNumber/:pointNo").put(updateTestPointDataStatus);
 
 export default router;
