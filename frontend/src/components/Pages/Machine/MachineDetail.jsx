@@ -1,5 +1,7 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { createTestSite } from "../../api/machine";
 
 import TestSiteBlock from "./TestSiteBlock";
 import dropdown from "../../../assets/dd2.png";
@@ -9,6 +11,7 @@ function MachineDetail() {
   const { id } = useParams();
   const { machine, loading, error, createdByUser, assignedEngineerUser } =
     useMachineDetails(id);
+  const navigate = useNavigate();
 
   if (loading)
     return (
@@ -24,6 +27,35 @@ function MachineDetail() {
     );
   if (!machine) return null;
 
+  const handleAddTestSite = async () => {
+    const lastTestSite = machine.testSites.at(-1);
+    const lastNumber = parseInt(
+      lastTestSite?.testSiteNumber?.slice(1) || "0",
+      10
+    );
+    const newTestSiteNumber = `T${lastNumber + 1}`;
+    const updatedMachine = await createTestSite(id, newTestSiteNumber);
+    if (!updatedMachine) {
+      console.error("Failed to add new test site");
+      return;
+    }
+
+    let testPoints = [];
+
+    if (updatedMachine) {
+      const site = updatedMachine.testSites.find(
+        (site) => site.testSiteNumber === newTestSiteNumber
+      );
+      testPoints = site ? site.points || [] : [];
+    }
+
+    navigate(`/admin/machine/${id}/${newTestSiteNumber}`, {
+      state: { machine: updatedMachine, testSitePoints: testPoints },
+    });
+
+    console.log(machine);
+  };
+
   return (
     <div className="mb-5 p-10">
       <div className="mb-2 text-4xl font-bold text-black md:text-6xl">
@@ -32,7 +64,14 @@ function MachineDetail() {
       <div className="z-10 gap-2.5 self-start p-2.5 -mt-3 text-2xl text-black">
         Created by: {createdByUser ? createdByUser.name : "Unknown"}
       </div>
-
+      <div className="mt-6 mb-4">
+        <button
+          className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200"
+          onClick={handleAddTestSite}
+        >
+          + Add another test site
+        </button>
+      </div>
       <div className="flex flex-wrap gap-5 justify-between self-end px-16 py-3.5 mr-3 mt-11 max-w-full text-3xl font-medium text-white bg-black rounded-3xl w-[1350px] max-md:px-5 max-md:mt-10">
         <div className="gap-2.5 self-stretch p-2.5 max-md:max-w-full">
           Assigned Engineer -{" "}

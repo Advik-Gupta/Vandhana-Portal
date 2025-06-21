@@ -148,6 +148,11 @@ const machineSchema = new mongoose.Schema(
       required: true,
     },
     testSites: [testSiteSchema],
+    machineType: {
+      type: String,
+      required: true,
+      enum: ["RGI96", "SRGM", "LRG", "FM", "CMRL (VRA)"],
+    },
   },
   {
     timestamps: true,

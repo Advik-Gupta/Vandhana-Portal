@@ -140,3 +140,15 @@ export const updatePointStatus = async (
     throw error;
   }
 };
+
+export const createTestSite = async (machineId, newTestSiteNumber) => {
+  try {
+    const response = await client.put(`/machines/${machineId}`, {
+      testSiteNumber: newTestSiteNumber,
+    });
+    return response.data.machine;
+  } catch (error) {
+    console.error(`Error creating test site for machine ${machineId}:`, error);
+    throw error;
+  }
+};

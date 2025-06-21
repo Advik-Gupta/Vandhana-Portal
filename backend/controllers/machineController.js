@@ -6,7 +6,11 @@ import User from "../models/userModel.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 import { uploadToR2 } from "./r2uploader.js";
 
-import { generateTestSites, getNextCycleDate } from "./utilityFunctions.js";
+import {
+  generateTestSites,
+  getNextCycleDate,
+  generatePoints,
+} from "./utilityFunctions.js";
 
 // @desc    Fetch all machines
 // @route   GET /api/v1/machines
@@ -240,9 +244,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       }_${curveNumber || "N/A"}_${ohePoleNumber || "N/A"}_${
         category || "N/A"
       }_${phase || "N/A"}_${formattedDate || "N/A"}`;
-      // const url = await uploadToR2(file.buffer, customName, file.mimetype);
-      const url =
-        "https://dummyimage.com/600x400/000/fff&text=Pre+DPT+Test+Image+1";
+      const url = await uploadToR2(file.buffer, customName, file.mimetype);
 
       console.log(point[cycleType].get("2"));
 
@@ -394,6 +396,57 @@ export const updateTestPointDataStatus = asyncHandler(async (req, res) => {
     }
     await machine.save();
     res.status(200).json({ success: true, machine });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// @desc    Create a new test site for a machine
+// @route   PUT /api/v1/machines/:id
+// @access  Admin
+
+export const createTestSite = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { testSiteNumber } = req.body;
+
+  if (!testSiteNumber) {
+    return res.status(400).json({
+      message:
+        "testSiteNumber, gmt, division, curveType, and degreeOfCurve are required",
+    });
+  }
+
+  try {
+    const machine = await Machine.findById(id);
+    if (!machine) {
+      return res.status(404).json({ message: "Machine not found" });
+    }
+
+    const newTestSite = {
+      testSiteNumber: testSiteNumber,
+      division: "N/A",
+      curveType: "N/A",
+      curveNumber: null,
+      degreeOfCurve: 0,
+      section: "N/A",
+      station: "N/A",
+      line: "Up",
+      kmFrom: 0,
+      kmTo: 0,
+      gmt: 0,
+      nextGrindingDueDate: new Date(),
+      nextRepaintingDueDate: new Date(),
+      currentGrindingCycle: 0,
+      currentRepaintingCycle: 0,
+      status: "active",
+      points: generatePoints(testSiteNumber, machine.machineType),
+    };
+
+    machine.testSites.push(newTestSite);
+    const updatedMachine = await machine.save();
+
+    res.status(201).json({ success: true, machine: updatedMachine });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: err.message });

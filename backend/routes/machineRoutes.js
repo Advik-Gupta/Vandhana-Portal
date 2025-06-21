@@ -14,10 +14,11 @@ import {
   uploadMachineData,
   updateTestSiteData,
   updateTestPointDataStatus,
+  createTestSite,
 } from "../controllers/machineController.js";
 
 router.route("/").get(getMachines).post(createMachine);
-router.route("/:id").get(getMachineById);
+router.route("/:id").get(getMachineById).put(createTestSite);
 router.post("/:id/upload", upload.any(), uploadMachineData);
 router.route("/:id/date").get(getLatestDueDate).patch(updateLatestDueDate);
 router.route("/:id/:testSiteNumber").put(updateTestSiteData);
