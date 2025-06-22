@@ -19,12 +19,14 @@ function HomePageAdmin() {
   function formatNotification(notification) {
     const { createdAt, message, type } = notification;
 
-    const match = message.match(
+    // Main message match (handles the required 7 fields)
+    const mainMatch = message.match(
       /Data for (\w+) cycle (\d+) of - ([^{,]+) \{([^}]+)\}, ([^,]+), (\d+) has been updated by (\w+)/
     );
 
-    if (!match) {
-      throw new Error("Message format not recognized");
+    if (!mainMatch) {
+      console.warn("Unrecognized notification message:", message);
+      return null;
     }
 
     const [
@@ -36,7 +38,20 @@ function HomePageAdmin() {
       testSite,
       pointNumber,
       uploaderId,
-    ] = match;
+    ] = mainMatch;
+
+    // Split the message by "+" to extract extra remarks, if any
+    const parts = message.split(" + ");
+    const extraInfo = parts[1]?.trim(); // May be undefined
+
+    let missingImages = null;
+    let userRemarks = null;
+
+    if (extraInfo) {
+      const splitParts = extraInfo.split("\n\n");
+      missingImages = splitParts[0]?.trim() || null;
+      userRemarks = splitParts.slice(1).join("\n\n").trim() || null;
+    }
 
     const pointName = `${testSite}.${pointNumber}`;
 
@@ -54,6 +69,8 @@ function HomePageAdmin() {
       uploadedBy: `${uploaderId}`,
       date: formattedDate,
       url: `/admin/upload-data/${machineID}/${testSite}/${pointNumber}`,
+      missingImages,
+      userRemarks,
     };
   }
 
@@ -114,6 +131,8 @@ function HomePageAdmin() {
                       uploadedBy={card.uploadedBy}
                       date={card.date}
                       className={index !== 0 ? "mt-3" : "mt-2"}
+                      missingImages={card.missingImages}
+                      userRemarks={card.userRemarks}
                     />
                   ))}
                 </div>

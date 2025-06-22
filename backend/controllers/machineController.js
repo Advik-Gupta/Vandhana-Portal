@@ -236,6 +236,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
         Roughness: "roughness",
         Hardness: "hardness",
         "Star Gauge": "starGauge",
+        Miniprof: "miniprof",
       };
       const customName = `${testSiteNumber || "N/A"}.${pointNumber || "N/A"}_${
         customerName || "N/A"
@@ -259,6 +260,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
             roughness: [],
             hardness: [],
             starGauge: [],
+            miniprof: [],
           },
           post: {
             dptTest: [],
@@ -269,12 +271,12 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
             roughness: [],
             hardness: [],
             starGauge: [],
+            miniprof: [],
           },
           uploadBy: uploadedBy,
           status: "pending",
           createdAt: dataUploadTime,
         });
-        // now we can push the url to the correct category and phase
         point[cycleType]
           .get(cycleNumber)
           [phase].get(namesOfTests[category])

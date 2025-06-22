@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import ViewSection from "./ViewSection";
-import arrow from "../../assets/arrow.svg";
 import { UserContext } from "../../contexts/user.context";
 
 import { useParams, useLocation } from "react-router-dom";
@@ -12,6 +11,9 @@ function DataUploadForm() {
   const [machineName, setMachineName] = useState("");
   const [testSite, setTestSite] = useState(testSiteNumber);
   const { currentUser } = useContext(UserContext);
+
+  const [unuploadedNotice, setUnuploadedNotice] = useState("");
+  const [userRemarks, setUserRemarks] = useState("");
 
   const location = useLocation();
   const { cycle, cycleNumber } = location.state || {};
@@ -25,6 +27,7 @@ function DataUploadForm() {
     "Roughness",
     "Hardness",
     "Star Gauge",
+    "Miniprof",
   ];
 
   const [fileData, setFileData] = useState(
@@ -53,6 +56,30 @@ function DataUploadForm() {
     };
     fetchMachineName();
   }, []);
+
+  useEffect(() => {
+    const missingLines = sectionTitles
+      .map((title) => {
+        const missingTypes = [];
+        if (!fileData[title].pre) missingTypes.push("pre");
+        if (!fileData[title].post) missingTypes.push("post");
+
+        if (missingTypes.length > 0) {
+          return `- ${title} (${missingTypes.join(", ")})`;
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    if (missingLines.length > 0) {
+      setUnuploadedNotice(
+        `Images not uploaded for these fields:\n${missingLines.join("\n")}\n\n`
+      );
+    } else {
+      setUnuploadedNotice("");
+    }
+  }, [fileData, sectionTitles]);
 
   const handlePreChange = (section, file) => {
     setFileData((prev) => ({
@@ -115,7 +142,9 @@ function DataUploadForm() {
       const notify = await axios.post(
         `http://localhost:8080/api/v1/notifications/send?to=admin`,
         {
-          message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName} {${machineID}}, ${testSiteNumber}, ${pointNumber} has been updated by ${currentUser._id}`,
+          message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName} {${machineID}}, ${testSiteNumber}, ${pointNumber} has been updated by ${
+            currentUser._id
+          } + ${unuploadedNotice + userRemarks}`,
           type:
             cycle === "Repaint"
               ? "repaintingCycleUpdate"
@@ -158,8 +187,24 @@ function DataUploadForm() {
           postPhoto={fileData[title].post}
           onPreChange={handlePreChange}
           onPostChange={handlePostChange}
+          isMiniprof={title === "Miniprof" ? true : false}
         />
       ))}
+      <div className="w-full mt-10 px-4">
+        <label className="text-xl font-semibold text-black block mb-2">
+          Remarks
+        </label>
+        <div className="bg-gray-100 text-gray-700 p-4 rounded-t-lg whitespace-pre-line">
+          {unuploadedNotice}
+        </div>
+        <textarea
+          className="w-full p-4 border border-t-0 border-gray-300 rounded-b-lg focus:outline-none focus:ring-2 focus:ring-black"
+          placeholder="You can type additional remarks here...Why are the absent files not uploaded? What is the reason for the upload?"
+          value={userRemarks}
+          onChange={(e) => setUserRemarks(e.target.value)}
+          rows={4}
+        />
+      </div>
 
       <button
         onClick={handleSubmit}
@@ -167,8 +212,6 @@ function DataUploadForm() {
       >
         Submit All Files
       </button>
-
-      <img className="self-end mt-10" src={arrow} alt="arrow" />
     </main>
   );
 }
