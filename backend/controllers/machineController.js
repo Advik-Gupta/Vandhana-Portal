@@ -452,3 +452,35 @@ export const createTestSite = asyncHandler(async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+// @desc    Create a new test site for a machine
+// @route   PATCH /api/v1/machines/:id
+// @access  Admin
+
+export const updateMachine = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name, engineerID, machineType } = req.body;
+
+  if (!name || !engineerID) {
+    return res.status(400).json({
+      message: "Name and engineerID are required",
+    });
+  }
+
+  try {
+    const machine = await Machine.findById(id);
+    if (!machine) {
+      return res.status(404).json({ message: "Machine not found" });
+    }
+
+    machine.name = name;
+    machine.assignedEngineer = engineerID;
+    machine.machineType = machineType;
+
+    await machine.save();
+    res.status(200).json({ success: true, machine });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});

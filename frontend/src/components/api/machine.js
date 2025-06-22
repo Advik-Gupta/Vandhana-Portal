@@ -152,3 +152,15 @@ export const createTestSite = async (machineId, newTestSiteNumber) => {
     throw error;
   }
 };
+
+export const updateMachineData = async (machineId, updatedData) => {
+  try {
+    const response = await client.patch(`/machines/${machineId}`, {
+      ...updatedData,
+    });
+    return response.data.machine;
+  } catch (error) {
+    console.error(`Error updating machine ${machineId}:`, error);
+    throw error;
+  }
+};

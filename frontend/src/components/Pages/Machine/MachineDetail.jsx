@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { createTestSite } from "../../api/machine";
@@ -6,26 +6,31 @@ import { createTestSite } from "../../api/machine";
 import TestSiteBlock from "./TestSiteBlock";
 import dropdown from "../../../assets/dd2.png";
 import useMachineDetails from "../../hooks/useMachineDetails";
+import AssignEmployee from "./AssignEmployee";
+
+import { updateMachineData } from "../../api/machine";
 
 function MachineDetail() {
   const { id } = useParams();
   const { machine, loading, error, createdByUser, assignedEngineerUser } =
     useMachineDetails(id);
+  const [showAssignPopup, setShowAssignPopup] = useState(false);
   const navigate = useNavigate();
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Loading...
-      </div>
-    );
-  if (error)
-    return (
-      <div className="flex items-center justify-center min-h-screen text-red-600">
-        {error}
-      </div>
-    );
-  if (!machine) return null;
+  const handleEngineerChange = async (selectedEngineerId) => {
+    const response = await updateMachineData(id, {
+      name: machine.name,
+      engineerID: selectedEngineerId,
+      machineType: machine.machineType,
+    });
+    // reload page if response is successful
+    if (response) {
+      navigate(`/admin/machines`);
+    } else {
+      console.error("Failed to update machine with new engineer");
+    }
+    setShowAssignPopup(false);
+  };
 
   const handleAddTestSite = async () => {
     const lastTestSite = machine.testSites.at(-1);
@@ -56,11 +61,32 @@ function MachineDetail() {
     console.log(machine);
   };
 
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-600">
+        {error}
+      </div>
+    );
+  if (!machine) return null;
+
   return (
     <div className="mb-5 p-10">
       <div className="mb-2 text-4xl font-bold text-black md:text-6xl">
         {machine.name}
       </div>
+      {showAssignPopup && (
+        <div className="absolute inset-0 z-50 flex justify-center items-start pt-10">
+          <div className="w-[700px]   rounded-2xl px-6">
+            <AssignEmployee onSelectEngineer={handleEngineerChange} />
+          </div>
+        </div>
+      )}
       <div className="z-10 gap-2.5 self-start p-2.5 -mt-3 text-2xl text-black">
         Created by: {createdByUser ? createdByUser.name : "Unknown"}
       </div>
@@ -72,16 +98,23 @@ function MachineDetail() {
           + Add another test site
         </button>
       </div>
-      <div className="flex flex-wrap gap-5 justify-between self-end px-16 py-3.5 mr-3 mt-11 max-w-full text-3xl font-medium text-white bg-black rounded-3xl w-[1350px] max-md:px-5 max-md:mt-10">
+
+      <div className="flex flex-wrap gap-5 justify-between self-end px-16 py-3.5 mt-11 max-w-full text-3xl font-medium text-white bg-black rounded-3xl w-[1350px] mx-auto max-md:px-5 max-md:mt-10">
         <div className="gap-2.5 self-stretch p-2.5 max-md:max-w-full">
           Assigned Engineer -{" "}
           {assignedEngineerUser ? assignedEngineerUser.name : "Unknown"}
         </div>
-        <img
-          src={dropdown}
-          alt="Dropdown"
-          className="object-contain shrink-0 my-auto rounded-xl aspect-[1.22] w-[50px]"
-        />
+        <button
+          onClick={() => setShowAssignPopup((prev) => !prev)}
+          className="flex absolute top-2/4 justify-center items-center bg-white rounded-xl -translate-y-2/4 h-[41px] right-[75px] w-[50px] mr-5"
+          aria-label="Select engineer"
+        >
+          <img
+            src={dropdown}
+            alt="Dropdown"
+            className="object-contain shrink-0 my-auto rounded-xl aspect-[1.22] w-[50px]"
+          />
+        </button>
       </div>
 
       <div className="flex flex-col items-center justify-center w-full max-w-7xl mx-auto mt-10">
