@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { createTestSite } from "../../api/machine";
@@ -7,6 +7,7 @@ import TestSiteBlock from "./TestSiteBlock";
 import dropdown from "../../../assets/dd2.png";
 import useMachineDetails from "../../hooks/useMachineDetails";
 import AssignEmployee from "./AssignEmployee";
+import CycleTable from "./CycleTable";
 
 import { updateMachineData } from "../../api/machine";
 
@@ -60,6 +61,10 @@ function MachineDetail() {
 
     console.log(machine);
   };
+
+  useEffect(() => {
+    console.log("Machine details loaded:", machine);
+  }, [machine]);
 
   if (loading)
     return (
@@ -115,6 +120,10 @@ function MachineDetail() {
             className="object-contain shrink-0 my-auto rounded-xl aspect-[1.22] w-[50px]"
           />
         </button>
+      </div>
+
+      <div className="mt-10">
+        <CycleTable machine={machine} />
       </div>
 
       <div className="flex flex-col items-center justify-center w-full max-w-7xl mx-auto mt-10">
