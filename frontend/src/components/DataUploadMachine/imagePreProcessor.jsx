@@ -1,77 +1,47 @@
-export async function processImage(
-  file,
-  desiredAspectRatio,
-  rotateIfVertical = true
-) {
+export async function processImage(file, targetAspectRatio, rotateIfVertical) {
   return new Promise((resolve, reject) => {
+    const img = new Image();
     const reader = new FileReader();
 
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        let rotate = false;
+    reader.onload = function (e) {
+      img.src = e.target.result;
+    };
 
-        // 1. Rotate if vertical
-        if (rotateIfVertical && height > width) {
-          rotate = true;
-          [width, height] = [height, width]; // Swap
-        }
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
+      let width = img.width;
+      let height = img.height;
 
-        // 2. Determine final canvas size based on aspect ratio
-        const currentRatio = width / height;
-        let targetWidth, targetHeight;
+      const isVertical = height > width;
 
-        if (desiredAspectRatio > currentRatio) {
-          // Too tall – reduce height
-          targetWidth = width;
-          targetHeight = width / desiredAspectRatio;
-        } else {
-          // Too wide – reduce width
-          targetHeight = height;
-          targetWidth = height * desiredAspectRatio;
-        }
+      const shouldRotate = rotateIfVertical && isVertical;
 
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
+      // Determine new dimensions based on aspect ratio
+      if (targetAspectRatio >= 1) {
+        width = 1000;
+        height = 1000 / targetAspectRatio;
+      } else {
+        height = 1000;
+        width = 1000 * targetAspectRatio;
+      }
 
-        // 3. Draw image on canvas
-        ctx.save();
-        if (rotate) {
-          canvas.width = targetHeight;
-          canvas.height = targetWidth;
-          ctx.translate(targetHeight, 0);
-          ctx.rotate(Math.PI / 2);
-          ctx.drawImage(img, 0, 0, height, width);
-        } else {
-          const offsetX = (width - targetWidth) / 2;
-          const offsetY = (height - targetHeight) / 2;
-          ctx.drawImage(
-            img,
-            offsetX,
-            offsetY,
-            targetWidth,
-            targetHeight,
-            0,
-            0,
-            targetWidth,
-            targetHeight
-          );
-        }
-        ctx.restore();
+      canvas.width = shouldRotate ? height : width;
+      canvas.height = shouldRotate ? width : height;
 
-        // 4. Convert back to File
-        canvas.toBlob((blob) => {
-          const newFile = new File([blob], file.name, { type: file.type });
-          resolve(newFile);
-        }, file.type);
-      };
+      if (shouldRotate) {
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(Math.PI / 2);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+      } else {
+        ctx.drawImage(img, 0, 0, width, height);
+      }
 
-      img.onerror = reject;
-      img.src = reader.result;
+      canvas.toBlob((blob) => {
+        const newFile = new File([blob], file.name, { type: file.type });
+        resolve(newFile);
+      }, file.type);
     };
 
     reader.onerror = reject;

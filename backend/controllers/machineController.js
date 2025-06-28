@@ -239,37 +239,6 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       );
     }
 
-    // Initialize the cycle if it doesn't exist
-    if (point[cycleType].get(cycleNumber) === undefined) {
-      point[cycleType].set(cycleNumber, {
-        pre: {
-          dptTest: [],
-          topView: [],
-          gaugeView: [],
-          longitudinalView: [],
-          contactBand: [],
-          roughness: [],
-          hardness: [],
-          starGauge: [],
-          miniprof: [],
-        },
-        post: {
-          dptTest: [],
-          topView: [],
-          gaugeView: [],
-          longitudinalView: [],
-          contactBand: [],
-          roughness: [],
-          hardness: [],
-          starGauge: [],
-          miniprof: [],
-        },
-        uploadBy: uploadedBy,
-        status: "pending",
-        createdAt: dataUploadTime,
-      });
-    }
-
     // Process image files
     for (const file of req.files) {
       const [category, phase] = file.fieldname.split("_"); // e.g. topView_pre
@@ -286,17 +255,89 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
 
       const url = await uploadToR2(file.buffer, customName, file.mimetype);
 
-      point[cycleType].get(cycleNumber)[phase].get(category).push(url);
+      if (point[cycleType].get(cycleNumber) === undefined) {
+        point[cycleType].set(cycleNumber, {
+          pre: {
+            dptTest: [],
+            topView: [],
+            gaugeView: [],
+            longitudinalView: [],
+            contactBand: [],
+            roughness: [],
+            hardness: [],
+            starGauge: [],
+            miniprof: [],
+          },
+          post: {
+            dptTest: [],
+            topView: [],
+            gaugeView: [],
+            longitudinalView: [],
+            contactBand: [],
+            roughness: [],
+            hardness: [],
+            starGauge: [],
+            miniprof: [],
+          },
+          uploadBy: uploadedBy,
+          status: "pending",
+          createdAt: dataUploadTime,
+        });
+        point[cycleType]
+          .get(cycleNumber)
+          [phase].get(namesOfTests[category])
+          .push(url);
+      } else {
+        point[cycleType]
+          .get(cycleNumber)
+          [phase].get(namesOfTests[category])
+          .push(url);
+      }
     }
 
     // Process numeric fields
     for (const field of numberFields) {
+      console.log("Processing field:", field);
+      const dataFieldName = field === "roughness" ? "Roughness" : "Hardness";
       for (const phase of ["pre", "post"]) {
-        const key = `${field}_${phase}`;
+        const key = `${dataFieldName}_${phase}`;
         const value = req.body[key];
-        if (!value) continue;
-
-        point[cycleType].get(cycleNumber)[phase].get(field).push(value);
+        if (!value) continue; // Skip if value is not provided
+        console.log("Phase:", phase);
+        console.log(field);
+        console.log(point[cycleType].get(cycleNumber) === undefined);
+        if (point[cycleType].get(cycleNumber) === undefined) {
+          point[cycleType].set(cycleNumber, {
+            pre: {
+              dptTest: [],
+              topView: [],
+              gaugeView: [],
+              longitudinalView: [],
+              contactBand: [],
+              roughness: [],
+              hardness: [],
+              starGauge: [],
+              miniprof: [],
+            },
+            post: {
+              dptTest: [],
+              topView: [],
+              gaugeView: [],
+              longitudinalView: [],
+              contactBand: [],
+              roughness: [],
+              hardness: [],
+              starGauge: [],
+              miniprof: [],
+            },
+            uploadBy: uploadedBy,
+            status: "pending",
+            createdAt: dataUploadTime,
+          });
+          point[cycleType].get(cycleNumber)[phase].get(field).push(value);
+        } else {
+          point[cycleType].get(cycleNumber)[phase].get(field).push(value);
+        }
       }
     }
 

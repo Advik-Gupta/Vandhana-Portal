@@ -109,7 +109,7 @@ function DataUploadForm() {
     }
 
     const aspectRatio = verticalSections.includes(section) ? 0.5 : 2;
-    const rotate = true; // always rotate if vertical
+    const rotate = !verticalSections.includes(section); // only rotate if NOT vertical
     const skipModel = verticalSections.includes(section); // don't send Longitudinal/Star Gauge to model
 
     return {
