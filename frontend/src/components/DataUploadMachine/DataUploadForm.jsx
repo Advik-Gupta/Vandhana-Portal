@@ -4,6 +4,7 @@ import { UserContext } from "../../contexts/user.context";
 
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
+import { processImage, sendToModel } from "./imagePreProcessor";
 // import { set } from "mongoose";
 
 function DataUploadForm() {
@@ -14,25 +15,30 @@ function DataUploadForm() {
 
   const [unuploadedNotice, setUnuploadedNotice] = useState("");
   const [userRemarks, setUserRemarks] = useState("");
+  const [ohePoleNumber, setOhePoleNumber] = useState("");
 
   const location = useLocation();
   const { cycle, cycleNumber } = location.state || {};
 
   const sectionTitles = [
-    "DPT Test",
-    "Top View",
-    "Gauge View",
-    "Longitudinal View",
-    "Contact Band",
-    "Roughness",
-    "Hardness",
-    "Star Gauge",
-    "Miniprof",
+    { title: "DPT Test", type: "image" },
+    { title: "Top View", type: "image" },
+    { title: "Gauge View", type: "image" },
+    { title: "Longitudinal View", type: "image" },
+    { title: "Contact Band", type: "image" },
+    { title: "Roughness", type: "number" },
+    { title: "Hardness", type: "number" },
+    { title: "Star Gauge", type: "image" },
+    { title: "Miniprof", type: "image" },
   ];
 
   const [fileData, setFileData] = useState(
-    sectionTitles.reduce((acc, title) => {
-      acc[title] = { pre: null, post: null };
+    sectionTitles.reduce((acc, { title, type }) => {
+      if (type === "number") {
+        acc[title] = { pre: "", post: "" };
+      } else {
+        acc[title] = { pre: null, post: null };
+      }
       return acc;
     }, {})
   );
@@ -59,10 +65,21 @@ function DataUploadForm() {
 
   useEffect(() => {
     const missingLines = sectionTitles
-      .map((title) => {
+      .map(({ title, type }) => {
+        if (type === "number") {
+          const missingTypes = [];
+          if (!fileData[title]?.pre?.trim()) missingTypes.push("pre");
+          if (!fileData[title]?.post?.trim()) missingTypes.push("post");
+
+          if (missingTypes.length > 0) {
+            return `- ${title} (${missingTypes.join(", ")})`;
+          }
+          return null;
+        }
+
         const missingTypes = [];
-        if (!fileData[title].pre) missingTypes.push("pre");
-        if (!fileData[title].post) missingTypes.push("post");
+        if (!fileData[title]?.pre) missingTypes.push("pre");
+        if (!fileData[title]?.post) missingTypes.push("post");
 
         if (missingTypes.length > 0) {
           return `- ${title} (${missingTypes.join(", ")})`;
@@ -74,25 +91,81 @@ function DataUploadForm() {
 
     if (missingLines.length > 0) {
       setUnuploadedNotice(
-        `Images not uploaded for these fields:\n${missingLines.join("\n")}\n\n`
+        `Images or values not uploaded for these fields:\n${missingLines.join(
+          "\n"
+        )}\n\n`
       );
     } else {
       setUnuploadedNotice("");
     }
   }, [fileData, sectionTitles]);
 
-  const handlePreChange = (section, file) => {
-    setFileData((prev) => ({
-      ...prev,
-      [section]: { ...prev[section], pre: file },
-    }));
+  function getProcessingRules(section, type) {
+    const verticalSections = ["Longitudinal View", "Star Gauge"];
+    const isMiniprofBan = section === "Miniprof" && type === "pre";
+
+    if (isMiniprofBan) {
+      return { skipAll: true };
+    }
+
+    const aspectRatio = verticalSections.includes(section) ? 0.5 : 2;
+    const rotate = true; // always rotate if vertical
+    const skipModel = verticalSections.includes(section); // don't send Longitudinal/Star Gauge to model
+
+    return {
+      skipAll: false,
+      skipModel,
+      aspectRatio,
+      rotate,
+    };
+  }
+
+  const handlePreChange = async (section, file) => {
+    const { skipAll, skipModel, aspectRatio, rotate } = getProcessingRules(
+      section,
+      "pre"
+    );
+
+    try {
+      const processedFile = skipAll
+        ? file
+        : await processImage(file, aspectRatio, rotate);
+
+      const finalFile =
+        skipAll || skipModel ? processedFile : await sendToModel(processedFile);
+
+      setFileData((prev) => ({
+        ...prev,
+        [section]: { ...prev[section], pre: finalFile },
+      }));
+    } catch (err) {
+      console.error(err);
+      alert("Error processing pre file: " + err.message);
+    }
   };
 
-  const handlePostChange = (section, file) => {
-    setFileData((prev) => ({
-      ...prev,
-      [section]: { ...prev[section], post: file },
-    }));
+  const handlePostChange = async (section, file) => {
+    const { skipAll, skipModel, aspectRatio, rotate } = getProcessingRules(
+      section,
+      "post"
+    );
+
+    try {
+      const processedFile = skipAll
+        ? file
+        : await processImage(file, aspectRatio, rotate);
+
+      const finalFile =
+        skipAll || skipModel ? processedFile : await sendToModel(processedFile);
+
+      setFileData((prev) => ({
+        ...prev,
+        [section]: { ...prev[section], post: finalFile },
+      }));
+    } catch (err) {
+      console.error(err);
+      alert("Error processing post file: " + err.message);
+    }
   };
 
   const handleSubmit = async () => {
@@ -102,14 +175,20 @@ function DataUploadForm() {
     console.log("Point Number:", pointNumber);
 
     const formData = new FormData();
-    Object.entries(fileData).forEach(([section, files]) => {
-      if (files.pre) {
-        formData.append(`${section}_pre`, files.pre, files.pre.name);
-      }
-      if (files.post) {
-        formData.append(`${section}_post`, files.post, files.post.name);
+    Object.entries(fileData).forEach(([section, data]) => {
+      if ("pre" in data && typeof data.pre === "string") {
+        // It's a number field
+        if (data.pre) formData.append(`${section}_pre`, data.pre);
+        if (data.post) formData.append(`${section}_post`, data.post);
+      } else {
+        // It's an image field
+        if (data.pre)
+          formData.append(`${section}_pre`, data.pre, data.pre.name);
+        if (data.post)
+          formData.append(`${section}_post`, data.post, data.post.name);
       }
     });
+
     try {
       console.log("Sending form data to server...");
       formData.append("machineId", machineID);
@@ -128,7 +207,7 @@ function DataUploadForm() {
       formData.append("line", testSite.line.toUpperCase());
       formData.append("curveNumber", testSite.curveNumber);
       formData.append("rail", testSite.curveType);
-      formData.append("ohePoleNumber", "2(8-10)");
+      formData.append("ohePoleNumber", ohePoleNumber);
       formData.append("uploadedBy", currentUser._id);
 
       const res = await axios.post(
@@ -178,18 +257,61 @@ function DataUploadForm() {
         </div>
       </header>
 
-      {sectionTitles.map((title) => (
-        <ViewSection
-          key={title}
-          title={title}
-          className="mt-7 ml-2.5"
-          prePhoto={fileData[title].pre}
-          postPhoto={fileData[title].post}
-          onPreChange={handlePreChange}
-          onPostChange={handlePostChange}
-          isMiniprof={title === "Miniprof" ? true : false}
-        />
-      ))}
+      {sectionTitles.map(({ title, type }) =>
+        type === "number" ? (
+          <div
+            key={title}
+            className="flex flex-col gap-4 mt-7 ml-3 w-full px-10 py-4 font-semibold bg-[#E9E9E9] rounded-xl max-w-[1307px] max-md:px-5 max-md:max-w-full"
+          >
+            <label className="text-3xl text-black">{title}</label>
+            <div className="flex flex-wrap gap-8 text-lg">
+              <div className="flex flex-col">
+                <label className="mb-1 text-gray-700">Pre Value</label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder={`Enter Pre ${title}`}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-lg w-60"
+                  value={fileData[title].pre}
+                  onChange={(e) =>
+                    setFileData((prev) => ({
+                      ...prev,
+                      [title]: { ...prev[title], pre: e.target.value },
+                    }))
+                  }
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="mb-1 text-gray-700">Post Value</label>
+                <input
+                  type="number"
+                  step="any"
+                  placeholder={`Enter Post ${title}`}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-lg w-60"
+                  value={fileData[title].post}
+                  onChange={(e) =>
+                    setFileData((prev) => ({
+                      ...prev,
+                      [title]: { ...prev[title], post: e.target.value },
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <ViewSection
+            key={title}
+            title={title}
+            className="mt-7 ml-2.5"
+            prePhoto={fileData[title].pre}
+            postPhoto={fileData[title].post}
+            onPreChange={handlePreChange}
+            onPostChange={handlePostChange}
+            isMiniprof={title === "Miniprof"}
+          />
+        )
+      )}
       <div className="w-full mt-10 px-4">
         <label className="text-xl font-semibold text-black block mb-2">
           Remarks
@@ -203,6 +325,19 @@ function DataUploadForm() {
           value={userRemarks}
           onChange={(e) => setUserRemarks(e.target.value)}
           rows={4}
+        />
+      </div>
+
+      <div className="w-full mt-10 px-4">
+        <label className="text-xl font-semibold text-black block mb-2">
+          OHE Pole Number
+        </label>
+        <input
+          type="text"
+          className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+          placeholder="Enter OHE pole number (e.g. 2(8-10))"
+          value={ohePoleNumber}
+          onChange={(e) => setOhePoleNumber(e.target.value)}
         />
       </div>
 

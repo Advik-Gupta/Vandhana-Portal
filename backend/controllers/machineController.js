@@ -191,6 +191,20 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
     "0"
   )}-${uploadDate.getFullYear()}`;
 
+  const namesOfTests = {
+    "DPT Test": "dptTest",
+    "Top View": "topView",
+    "Gauge View": "gaugeView",
+    "Longitudinal View": "longitudinalView",
+    "Contact Band": "contactBand",
+    Roughness: "roughness",
+    Hardness: "hardness",
+    "Star Gauge": "starGauge",
+    Miniprof: "miniprof",
+  };
+
+  const numberFields = ["roughness", "hardness"];
+
   try {
     const machine = await Machine.findById(machineId);
     const testSite = await machine.testSites.find(
@@ -225,19 +239,43 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       );
     }
 
+    // Initialize the cycle if it doesn't exist
+    if (point[cycleType].get(cycleNumber) === undefined) {
+      point[cycleType].set(cycleNumber, {
+        pre: {
+          dptTest: [],
+          topView: [],
+          gaugeView: [],
+          longitudinalView: [],
+          contactBand: [],
+          roughness: [],
+          hardness: [],
+          starGauge: [],
+          miniprof: [],
+        },
+        post: {
+          dptTest: [],
+          topView: [],
+          gaugeView: [],
+          longitudinalView: [],
+          contactBand: [],
+          roughness: [],
+          hardness: [],
+          starGauge: [],
+          miniprof: [],
+        },
+        uploadBy: uploadedBy,
+        status: "pending",
+        createdAt: dataUploadTime,
+      });
+    }
+
+    // Process image files
     for (const file of req.files) {
-      const [category, phase] = file.fieldname.split("_"); // e.g. "dptTest_1_pre"
-      const namesOfTests = {
-        "DPT Test": "dptTest",
-        "Top View": "topView",
-        "Gauge View": "gaugeView",
-        "Longitudinal View": "longitudinalView",
-        "Contact Band": "contactBand",
-        Roughness: "roughness",
-        Hardness: "hardness",
-        "Star Gauge": "starGauge",
-        Miniprof: "miniprof",
-      };
+      const [category, phase] = file.fieldname.split("_"); // e.g. topView_pre
+
+      if (numberFields.includes(category)) continue; // Skip number fields here
+
       const customName = `${testSiteNumber || "N/A"}.${pointNumber || "N/A"}_${
         customerName || "N/A"
       }_${zone || "N/A"}_${location || "N/A"}_${line || "N/A"}_${
@@ -245,47 +283,20 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       }_${curveNumber || "N/A"}_${ohePoleNumber || "N/A"}_${
         category || "N/A"
       }_${phase || "N/A"}_${formattedDate || "N/A"}`;
+
       const url = await uploadToR2(file.buffer, customName, file.mimetype);
 
-      console.log(point[cycleType].get("2"));
+      point[cycleType].get(cycleNumber)[phase].get(category).push(url);
+    }
 
-      if (point[cycleType].get(cycleNumber) === undefined) {
-        point[cycleType].set(cycleNumber, {
-          pre: {
-            dptTest: [],
-            topView: [],
-            gaugeView: [],
-            longitudinalView: [],
-            contactBand: [],
-            roughness: [],
-            hardness: [],
-            starGauge: [],
-            miniprof: [],
-          },
-          post: {
-            dptTest: [],
-            topView: [],
-            gaugeView: [],
-            longitudinalView: [],
-            contactBand: [],
-            roughness: [],
-            hardness: [],
-            starGauge: [],
-            miniprof: [],
-          },
-          uploadBy: uploadedBy,
-          status: "pending",
-          createdAt: dataUploadTime,
-        });
-        point[cycleType]
-          .get(cycleNumber)
-          [phase].get(namesOfTests[category])
-          .push(url);
-      } else {
-        point[cycleType]
-          .get(cycleNumber)
-          [phase].get(namesOfTests[category])
-          .push(url);
+    // Process numeric fields
+    for (const field of numberFields) {
+      for (const phase of ["pre", "post"]) {
+        const key = `${field}_${phase}`;
+        const value = req.body[key];
+        if (!value) continue;
+
+        point[cycleType].get(cycleNumber)[phase].get(field).push(value);
       }
     }
 
