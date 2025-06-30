@@ -1,5 +1,3 @@
-import * as React from "react";
-import arrow from "../../../assets/blackArrow.svg";
 function UpdatesSection({ updates }) {
   return (
     <section className="flex flex-col items-start pt-6 pr-16 pb-11 pl-6 mx-auto mt-10 w-full text-xs font-light text-black bg-gray-200 rounded-3xl max-md:px-5 max-md:mt-10">

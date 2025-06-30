@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../../contexts/user.context";
 import Button from "../../ui/Button";
 import { fetchRawMachines } from "../../api/machine";
+import UpdatesSection from "./Updates";
 
 const Dashboard = () => {
   const [allMachines, setAllMachines] = useState([]);
@@ -14,6 +15,8 @@ const Dashboard = () => {
   const [cycle, setCycle] = useState("");
   const [cycleNumber, setCycleNumber] = useState("");
   const [chosenMachineData, setChosenMachineData] = useState(null);
+
+  const [otherUpdates, setOtherUpdates] = useState(null);
 
   useEffect(() => {
     console.log("User context:", currentUser);
@@ -37,7 +40,12 @@ const Dashboard = () => {
   const testSites =
     allMachines
       .find((machineToFind) => machineToFind.name === machine)
-      ?.testSites.map((site) => site.testSiteNumber) || [];
+      ?.testSites.map((site) => {
+        if (site.status === "active") {
+          return site.testSiteNumber;
+        }
+        return null;
+      }) || [];
   const points =
     allMachines
       .find((machineToFind) => machineToFind.name === machine)
@@ -80,6 +88,85 @@ const Dashboard = () => {
     );
     setChosenMachineData(chosenMachine);
   };
+
+  function formatNotification(notification) {
+    const { createdAt, message } = notification;
+
+    // Main message match (handles the required 7 fields)
+    const mainMatch = message.match(
+      /Data for (\w+) cycle (\d+) of - ([^{,]+) \{([^}]+)\}, ([^,]+), (\d+) has been updated by (\w+)/
+    );
+
+    if (!mainMatch) {
+      console.warn("Unrecognized notification message:", message);
+      return null;
+    }
+
+    const [
+      _,
+      cycleType,
+      cycleNumber,
+      title,
+      machineID,
+      testSite,
+      pointNumber,
+      uploaderId,
+    ] = mainMatch;
+
+    // Split the message by "+" to extract extra remarks, if any
+    const parts = message.split(" + ");
+    const extraInfo = parts[1]?.trim(); // May be undefined
+
+    let missingImages = null;
+    let userRemarks = null;
+
+    if (extraInfo) {
+      const splitParts = extraInfo.split("\n\n");
+      missingImages = splitParts[0]?.trim() || null;
+      userRemarks = splitParts.slice(1).join("\n\n").trim() || null;
+    }
+
+    const pointName = `${testSite}.${pointNumber}`;
+
+    const dateObj = new Date(createdAt);
+    const formattedDate = dateObj
+      .toLocaleDateString("en-GB")
+      .split("/")
+      .map((part, i) => (i === 2 ? part.slice(-2) : part))
+      .join("/");
+
+    return {
+      type: cycleType === "Grind" ? "grinding" : "repainting",
+      title: title.trim(),
+      subtitle: `Test site No ${testSite} > ${pointName} > ${cycleType} Cycle ${cycleNumber}`,
+      uploadedBy: `${uploaderId}`,
+      date: formattedDate,
+      url: `/admin/upload-data/${machineID}/${testSite}/${pointNumber}`,
+      missingImages,
+      userRemarks,
+    };
+  }
+
+  useEffect(() => {
+    currentUser?.notifications?.reverse().map((notification) => {
+      if (notification.type === "info" || notification.type === "warning") {
+        if (otherUpdates && otherUpdates.length >= 10) {
+          setOtherUpdates((prev) => {
+            const newUpdates = [...(prev || [])];
+            newUpdates.shift();
+            return [...newUpdates, notification];
+          });
+        } else {
+          setOtherUpdates((prev) => [...(prev || []), notification]);
+        }
+      } else {
+        setDataUpdates((prev) => [
+          ...(prev || []),
+          formatNotification(notification),
+        ]);
+      }
+    });
+  }, [currentUser]);
 
   return (
     <div className="min-h-screen p-10 bg-white text-black">
@@ -131,9 +218,13 @@ const Dashboard = () => {
               >
                 <option value="">-- Select Site --</option>
                 {testSites.map((item, idx) => (
-                  <option key={idx} value={item}>
-                    {item}
-                  </option>
+                  <>
+                    {item === null ? null : (
+                      <option key={idx} value={item}>
+                        {item}
+                      </option>
+                    )}
+                  </>
                 ))}
               </select>
             </div>
@@ -208,6 +299,16 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      <div className="ml-5 flex flex-col gap-6 max-md:ml-0 max-md:w-full">
+        {otherUpdates && otherUpdates.length > 0 ? (
+          <UpdatesSection updates={otherUpdates} />
+        ) : (
+          <div className="text-gray-500 text-center mt-5">
+            No updates available.
+          </div>
+        )}
+      </div>
     </div>
   );
 };

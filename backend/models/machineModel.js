@@ -21,6 +21,10 @@ const grindCycleSchema = new mongoose.Schema(
       enum: ["issues", "approved", "closed", "pending"],
       default: "pending",
     },
+    feedback: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -16,6 +16,9 @@ function MachineDetail() {
   const { machine, loading, error, createdByUser, assignedEngineerUser } =
     useMachineDetails(id);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [showSiteInput, setShowSiteInput] = useState(false);
+  const [siteInputValue, setSiteInputValue] = useState("");
+
   const navigate = useNavigate();
 
   const handleEngineerChange = async (selectedEngineerId) => {
@@ -34,12 +37,12 @@ function MachineDetail() {
   };
 
   const handleAddTestSite = async () => {
-    const lastTestSite = machine.testSites.at(-1);
-    const lastNumber = parseInt(
-      lastTestSite?.testSiteNumber?.slice(1) || "0",
-      10
-    );
-    const newTestSiteNumber = `T${lastNumber + 1}`;
+    if (!siteInputValue.trim()) {
+      alert("Please enter a valid test site number.");
+      return;
+    }
+
+    const newTestSiteNumber = `T${siteInputValue.trim()}`;
     const updatedMachine = await createTestSite(id, newTestSiteNumber);
     if (!updatedMachine) {
       console.error("Failed to add new test site");
@@ -48,18 +51,18 @@ function MachineDetail() {
 
     let testPoints = [];
 
-    if (updatedMachine) {
-      const site = updatedMachine.testSites.find(
-        (site) => site.testSiteNumber === newTestSiteNumber
-      );
-      testPoints = site ? site.points || [] : [];
-    }
+    const site = updatedMachine.testSites.find(
+      (site) => site.testSiteNumber === newTestSiteNumber
+    );
+    testPoints = site ? site.points || [] : [];
 
     navigate(`/admin/machine/${id}/${newTestSiteNumber}`, {
       state: { machine: updatedMachine, testSitePoints: testPoints },
     });
 
-    console.log(machine);
+    // Reset state
+    setSiteInputValue("");
+    setShowSiteInput(false);
   };
 
   useEffect(() => {
@@ -96,12 +99,41 @@ function MachineDetail() {
         Created by: {createdByUser ? createdByUser.name : "Unknown"}
       </div>
       <div className="mt-6 mb-4">
-        <button
-          className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200"
-          onClick={handleAddTestSite}
-        >
-          + Add another test site
-        </button>
+        <div className="mt-6 mb-4">
+          {!showSiteInput ? (
+            <button
+              className="px-6 py-2 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200"
+              onClick={() => setShowSiteInput(true)}
+            >
+              + Add another test site
+            </button>
+          ) : (
+            <div className="flex gap-3 items-center">
+              <input
+                type="number"
+                className="px-4 py-2 border rounded-md w-80"
+                placeholder="New site number (e.g. 3)"
+                value={siteInputValue}
+                onChange={(e) => setSiteInputValue(e.target.value)}
+              />
+              <button
+                className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+                onClick={handleAddTestSite}
+              >
+                Confirm
+              </button>
+              <button
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                onClick={() => {
+                  setShowSiteInput(false);
+                  setSiteInputValue("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-5 justify-between self-end px-16 py-3.5 mt-11 max-w-full text-3xl font-medium text-white bg-black rounded-3xl w-[1350px] mx-auto max-md:px-5 max-md:mt-10">

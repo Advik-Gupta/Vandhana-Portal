@@ -9,7 +9,9 @@ const CycleTable = ({ machine }) => {
 
   const columnHeaders = [
     { label: "DPT", field: "dptTest" },
-    { label: "SURFACE IMAGE", field: "surfaceImage" },
+    { label: "TOP VIEW", field: "topView" },
+    { label: "GAUGE VIEW", field: "gaugeView" },
+    { label: "LONGITUDINAL VIEW", field: "longitudinalView" },
     { label: "CONTACT BAND", field: "contactBand" },
     { label: "STAR GAUGE", field: "starGauge" },
     { label: "MINIPROF", field: "miniprof" },

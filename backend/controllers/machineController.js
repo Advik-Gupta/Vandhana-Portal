@@ -302,10 +302,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
       for (const phase of ["pre", "post"]) {
         const key = `${dataFieldName}_${phase}`;
         const value = req.body[key];
-        if (!value) continue; // Skip if value is not provided
-        console.log("Phase:", phase);
-        console.log(field);
-        console.log(point[cycleType].get(cycleNumber) === undefined);
+        if (!value) continue;
         if (point[cycleType].get(cycleNumber) === undefined) {
           point[cycleType].set(cycleNumber, {
             pre: {
@@ -408,54 +405,6 @@ export const updateTestSiteData = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update status of a test point data
-// @route   PUT /api/v1/machines/:machineId/:testSiteNumber/:pointNumber
-// @access  Admin
-
-export const updateTestPointDataStatus = asyncHandler(async (req, res) => {
-  const { id, testSiteNumber, pointNo } = req.params;
-  const { status, cycleId, cycleType } = req.body;
-
-  console.log("request received to update status to:", status);
-
-  try {
-    const machine = await Machine.findById(id);
-    if (!machine) {
-      return res.status(404).json({ message: "Machine not found" });
-    }
-    const testSite = machine.testSites.find(
-      (site) => site.testSiteNumber === testSiteNumber
-    );
-    if (!testSite) {
-      return res.status(404).json({ message: "Test site not found" });
-    }
-    const point = testSite.points.find((p) => p.pointName === pointNo);
-    if (!point) {
-      return res.status(404).json({ message: "Point not found" });
-    }
-    if (status === "approved") {
-      const cycles = point[cycleType];
-      let currentCycle = null;
-
-      for (const [key, cycle] of cycles.entries()) {
-        if (cycle._id.toString() === cycleId) {
-          currentCycle = cycle;
-          break;
-        }
-      }
-      if (!currentCycle) {
-        return res.status(404).json({ message: "Cycle not found" });
-      }
-      currentCycle.status = "approved";
-    }
-    await machine.save();
-    res.status(200).json({ success: true, machine });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 // @desc    Create a new test site for a machine
 // @route   PUT /api/v1/machines/:id
 // @access  Admin
@@ -530,6 +479,71 @@ export const updateMachine = asyncHandler(async (req, res) => {
     machine.name = name;
     machine.assignedEngineer = engineerID;
     machine.machineType = machineType;
+
+    await machine.save();
+    res.status(200).json({ success: true, machine });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// @desc    Update status of a test point data
+// @route   PUT /api/v1/machines/:machineId/:testSiteNumber/:pointNumber
+// @access  Admin
+
+export const updateTestPointDataStatus = asyncHandler(async (req, res) => {
+  const { id, testSiteNumber, pointNo } = req.params;
+  const { status, cycleId, cycleType, feedback } = req.body;
+
+  console.log("request received to update status to:", status);
+
+  try {
+    const machine = await Machine.findById(id);
+    if (!machine) {
+      return res.status(404).json({ message: "Machine not found" });
+    }
+    const testSite = machine.testSites.find(
+      (site) => site.testSiteNumber === testSiteNumber
+    );
+    if (!testSite) {
+      return res.status(404).json({ message: "Test site not found" });
+    }
+    const point = testSite.points.find((p) => p.pointName === pointNo);
+    if (!point) {
+      return res.status(404).json({ message: "Point not found" });
+    }
+
+    if (status === "approved") {
+      const cycles = point[cycleType];
+      let currentCycle = null;
+
+      for (const [key, cycle] of cycles.entries()) {
+        if (cycle._id.toString() === cycleId) {
+          currentCycle = cycle;
+          break;
+        }
+      }
+      if (!currentCycle) {
+        return res.status(404).json({ message: "Cycle not found" });
+      }
+      currentCycle.status = "approved";
+    } else if (status === "issues") {
+      const cycles = point[cycleType];
+      let currentCycle = null;
+
+      for (const [key, cycle] of cycles.entries()) {
+        if (cycle._id.toString() === cycleId) {
+          currentCycle = cycle;
+          break;
+        }
+      }
+      if (!currentCycle) {
+        return res.status(404).json({ message: "Cycle not found" });
+      }
+      currentCycle.status = "issues";
+      currentCycle.feedback = feedback || "No feedback provided";
+    }
 
     await machine.save();
     res.status(200).json({ success: true, machine });

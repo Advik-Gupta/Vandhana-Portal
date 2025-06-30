@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import axios from "axios";
 
 import StatusHeader from "./StatusHeader";
-import IssuesList from "./IssuesList";
 import ActionButton from "./ActionButton";
 import DataTable from "./DataTable";
 import Button from "../../ui/Button";
@@ -34,15 +34,60 @@ function DataUploadedDetail() {
       cycleName,
       cycleData._id
     )
-      .then((response) => {
+      .then(async (response) => {
         console.log("Point approved:", response);
+        const notify = await axios.post(
+          `http://localhost:8080/api/v1/notifications/send`,
+          {
+            message: `Feedback for ${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo} : Data approved`,
+            userId: cycleData.uploadBy,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        if (notify.status === 201) {
+          console.log("Notification sent successfully");
+        }
       })
       .catch((error) => {
         console.error("Error approving point:", error);
       });
   };
 
-  const onRequestReupload = () => {};
+  const onRequestReupload = () => {
+    updatePointStatus(
+      machineID,
+      testSiteNumber,
+      pointNo,
+      "issues",
+      cycleName,
+      cycleData._id,
+      feedback
+    )
+      .then(async (response) => {
+        console.log("Point re-upload requested:", response);
+        const notify = await axios.post(
+          `http://localhost:8080/api/v1/notifications/send`,
+          {
+            message: `Feedback for ${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo} : ${feedback}`,
+            userId: cycleData.uploadBy,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        if (notify.status === 201) {
+          console.log("Notification sent successfully");
+        }
+      })
+      .catch((error) => {
+        console.error("Error requesting re-upload:", error);
+      });
+  };
+
   return (
     <div className="bg-gray-200 min-h-screen p-4">
       <div className="mx-auto max-w-7xl px-4">
@@ -83,7 +128,6 @@ function DataUploadedDetail() {
                   />
                 </section>
               </div>
-              <IssuesList />
               <ActionButton
                 onApprove={onApproveButton}
                 onReupload={onRequestReupload}

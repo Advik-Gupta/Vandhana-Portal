@@ -116,7 +116,8 @@ export const updatePointStatus = async (
   pointNo,
   status,
   cycleName = null,
-  cycleId = null
+  cycleId = null,
+  feedback = null
 ) => {
   try {
     const cycleType = cycleName.toLowerCase().startsWith("grind")
@@ -129,6 +130,7 @@ export const updatePointStatus = async (
         status,
         cycleId,
         cycleType,
+        feedback,
       }
     );
     return response.data;

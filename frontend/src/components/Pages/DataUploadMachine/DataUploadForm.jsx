@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import ViewSection from "./ViewSection";
-import { UserContext } from "../../contexts/user.context";
+import { UserContext } from "../../../contexts/user.context";
 
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import { processImage, sendToModel } from "./imagePreProcessor";
-// import { set } from "mongoose";
 
 function DataUploadForm() {
   const { machineID, testSiteNumber, pointNumber } = useParams();
@@ -20,17 +19,20 @@ function DataUploadForm() {
   const location = useLocation();
   const { cycle, cycleNumber } = location.state || {};
 
-  const sectionTitles = [
-    { title: "DPT Test", type: "image" },
-    { title: "Top View", type: "image" },
-    { title: "Gauge View", type: "image" },
-    { title: "Longitudinal View", type: "image" },
-    { title: "Contact Band", type: "image" },
-    { title: "Roughness", type: "number" },
-    { title: "Hardness", type: "number" },
-    { title: "Star Gauge", type: "image" },
-    { title: "Miniprof", type: "image" },
-  ];
+  const sectionTitles = useMemo(
+    () => [
+      { title: "DPT Test", type: "image" },
+      { title: "Top View", type: "image" },
+      { title: "Gauge View", type: "image" },
+      { title: "Longitudinal View", type: "image" },
+      { title: "Contact Band", type: "image" },
+      { title: "Roughness", type: "number" },
+      { title: "Hardness", type: "number" },
+      { title: "Star Gauge", type: "image" },
+      { title: "Miniprof", type: "image" },
+    ],
+    []
+  );
 
   const [fileData, setFileData] = useState(
     sectionTitles.reduce((acc, { title, type }) => {
@@ -210,32 +212,46 @@ function DataUploadForm() {
       formData.append("ohePoleNumber", ohePoleNumber);
       formData.append("uploadedBy", currentUser._id);
 
-      const res = await axios.post(
-        `http://localhost:8080/api/v1/machines/${machineID}/upload`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios
+        .post(
+          `http://localhost:8080/api/v1/machines/${machineID}/upload`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        )
+        .then(async (response) => {
+          if (response.status === 201) {
+            console.log("Data uploaded successfully");
+          }
+          const notify = await axios.post(
+            `http://localhost:8080/api/v1/notifications/send?to=admin`,
+            {
+              message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName} {${machineID}}, ${testSiteNumber}, ${pointNumber} has been updated by ${
+                currentUser._id
+              } + ${unuploadedNotice + userRemarks}`,
+              type:
+                cycle === "Repaint"
+                  ? "repaintingCycleUpdate"
+                  : "grindingCycleUpdate",
+            },
+            {
+              headers: { "Content-Type": "application/json" },
+              withCredentials: true,
+            }
+          );
+          if (notify.status === 201) {
+            console.log("Notification sent successfully");
+          }
+        })
+        .catch((error) => {
+          console.error("Error uploading data:", error);
+          throw new Error("Failed to upload data");
+        });
 
-      const notify = await axios.post(
-        `http://localhost:8080/api/v1/notifications/send?to=admin`,
-        {
-          message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName} {${machineID}}, ${testSiteNumber}, ${pointNumber} has been updated by ${
-            currentUser._id
-          } + ${unuploadedNotice + userRemarks}`,
-          type:
-            cycle === "Repaint"
-              ? "repaintingCycleUpdate"
-              : "grindingCycleUpdate",
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-
-      alert("Upload success!");
+      if (res) {
+        alert("Upload success!");
+      }
     } catch (err) {
       console.error(err);
       alert("Upload failed.");
