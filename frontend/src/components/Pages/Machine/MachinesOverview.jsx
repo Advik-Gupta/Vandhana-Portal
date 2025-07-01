@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
@@ -6,10 +6,12 @@ import { saveAs } from "file-saver";
 import Button from "../../ui/Button";
 import DropdownButton from "../../ui/DropDownBtn";
 import { fetchMachines } from "../../api/machine";
+import { UserContext } from "../../../contexts/user.context";
 
 const MachinesOverview = () => {
   const [searchMachine, setSearchMachine] = useState("");
   const [allMachines, setAllMachines] = useState([]);
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     fetchMachines()
@@ -149,11 +151,17 @@ const MachinesOverview = () => {
           placeholder="Search by machine name or ID..."
           className="bg-gray-300 rounded p-2 w-100"
         />
-        <Button
-          text="+ Add Machine"
-          className="text-xl"
-          href="/admin/add-machine"
-        />
+        {currentUser?.role === "admin" ? (
+          <>
+            <Button
+              text="+ Add Machine"
+              className="text-xl"
+              href="/admin/add-machine"
+            />
+          </>
+        ) : (
+          <></>
+        )}
       </div>
 
       <div className="overflow-x-auto rounded-lg">

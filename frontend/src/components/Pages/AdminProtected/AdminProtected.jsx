@@ -11,7 +11,11 @@ const AdminProtectedRoutes = () => {
 
   useEffect(() => {
     if (!currentUser || currentUser.role !== "admin") {
-      navigate("/");
+      if (currentUser.role === "supervisor") {
+        navigate("/supervisor/home");
+      } else {
+        navigate("/");
+      }
     }
   }, [currentUser, navigate]);
 

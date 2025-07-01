@@ -225,7 +225,7 @@ function DataUploadForm() {
             console.log("Data uploaded successfully");
           }
           const notify = await axios.post(
-            `http://localhost:8080/api/v1/notifications/send?to=admin`,
+            `http://localhost:8080/api/v1/notifications/send?to=admin+supervisor`,
             {
               message: `Data for ${cycle} cycle ${cycleNumber} of - ${machineName} {${machineID}}, ${testSiteNumber}, ${pointNumber} has been updated by ${
                 currentUser._id
