@@ -53,7 +53,6 @@ function DataUploadedDetail() {
           `http://localhost:8080/api/v1/notifications/send?to=admin`,
           {
             message: `Feedback for ${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo} : Data approved BY ${currentUser.role} - ${currentUser.name} (${currentUser._id})`,
-            userId: cycleData.uploadBy,
           },
           {
             headers: { "Content-Type": "application/json" },
@@ -101,7 +100,6 @@ function DataUploadedDetail() {
           `http://localhost:8080/api/v1/notifications/send?to=admin`,
           {
             message: `Feedback for ${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo} : ${feedback} BY ${currentUser.role} - ${currentUser.name} (${currentUser._id})`,
-            userId: cycleData.uploadBy,
           },
           {
             headers: { "Content-Type": "application/json" },

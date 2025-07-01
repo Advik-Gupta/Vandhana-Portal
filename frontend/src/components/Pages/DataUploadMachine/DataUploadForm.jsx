@@ -15,6 +15,8 @@ function DataUploadForm() {
   const [unuploadedNotice, setUnuploadedNotice] = useState("");
   const [userRemarks, setUserRemarks] = useState("");
   const [ohePoleNumber, setOhePoleNumber] = useState("");
+  const [firstUpload, setFirstUpload] = useState(true);
+  const [showWarning, setShowWarning] = useState(false);
 
   const location = useLocation();
   const { cycle, cycleNumber } = location.state || {};
@@ -53,11 +55,32 @@ function DataUploadForm() {
           `http://localhost:8080/api/v1/machines/${machineID}`
         );
         setMachineName(response.data.name);
-        setTestSite(
-          response.data.testSites.find(
-            (site) => site.testSiteNumber === testSiteNumber
-          )
+        const site = response.data.testSites.find(
+          (site) => site.testSiteNumber === testSiteNumber
         );
+        setTestSite(site);
+
+        const currentPoint = site.points.find(
+          (point) => point.pointName === `${testSiteNumber}.${pointNumber}`
+        );
+
+        if (cycle === "Grind") {
+          if (!currentPoint.grindCycles[cycleNumber - 1]) {
+            setFirstUpload(true);
+            setShowWarning(true);
+          } else {
+            setFirstUpload(false);
+          }
+        }
+
+        if (cycle === "Repaint") {
+          if (!currentPoint.repaintCycles[cycleNumber - 1]) {
+            setFirstUpload(true);
+            setShowWarning(true);
+          } else {
+            setFirstUpload(false);
+          }
+        }
       } catch (error) {
         console.error("Error fetching machine name:", error);
       }
@@ -355,12 +378,46 @@ function DataUploadForm() {
         />
       </div>
 
-      <button
-        onClick={handleSubmit}
-        className="self-center mt-10 px-10 py-3 bg-black text-white rounded-3xl text-2xl"
-      >
-        Submit All Files
-      </button>
+      {firstUpload && showWarning && (
+        <div className="w-full mt-10 p-6 bg-yellow-100 border-l-4 border-yellow-500 rounded-xl text-black">
+          <h3 className="text-2xl font-semibold mb-2">
+            You're about to start uploading data
+          </h3>
+          <p className="mb-4">
+            You are initiating the upload process for point{" "}
+            <strong>
+              {testSiteNumber}.{pointNumber}
+            </strong>
+            . Once you upload the <strong>pre</strong> data, you must complete
+            uploading the <strong>post</strong> data within{" "}
+            <strong>3 days</strong>. You will not be allowed to upload post data
+            after that.
+          </p>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowWarning(false)}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg text-lg"
+            >
+              I Understand, Proceed
+            </button>
+            <button
+              onClick={() => (window.location.href = "/")} // or use navigate("/")
+              className="px-6 py-2 bg-gray-300 text-black rounded-lg text-lg"
+            >
+              I'm Not Ready
+            </button>
+          </div>
+        </div>
+      )}
+
+      {(!firstUpload || !showWarning) && (
+        <button
+          onClick={handleSubmit}
+          className="self-center mt-10 px-10 py-3 bg-black text-white rounded-3xl text-2xl"
+        >
+          Submit All Files
+        </button>
+      )}
     </main>
   );
 }
