@@ -207,7 +207,11 @@ const MachinesOverview = () => {
               <tr key={index} className="hover:bg-gray-100">
                 <td className="py-2 px-4">
                   <Link
-                    to={`/admin/machine/${machine.id}`}
+                    to={
+                      currentUser?.role === "admin"
+                        ? `/admin/machine/${machine.id}`
+                        : `/supervisor/machine/${machine.id}`
+                    }
                     className="text-blue-600 hover:underline"
                   >
                     {machine.name}

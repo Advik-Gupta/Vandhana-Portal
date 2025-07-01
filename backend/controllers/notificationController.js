@@ -6,6 +6,11 @@ export const sendNotification = asyncHandler(async (req, res) => {
   let { userId } = req.body;
   const to = (req.query.to || "").trim().split(/\s+/).filter(Boolean);
 
+  const notification = {
+    message,
+    type,
+  };
+
   if (to.includes("admin")) {
     const admins = await User.find({ role: "admin" }).select("_id");
     const adminIds = admins.map((user) => user._id);
@@ -16,11 +21,6 @@ export const sendNotification = asyncHandler(async (req, res) => {
     }
 
     adminIds.forEach(async (adminId) => {
-      const notification = {
-        message,
-        type,
-      };
-
       const updatedUser = await User.findByIdAndUpdate(
         adminId,
         { $push: { notifications: notification } },
@@ -31,10 +31,6 @@ export const sendNotification = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error("User not found");
       }
-    });
-
-    return res.status(201).json({
-      message: "Notification sent to all admins successfully",
     });
   }
 
@@ -48,11 +44,6 @@ export const sendNotification = asyncHandler(async (req, res) => {
     }
 
     supervisorIds.forEach(async (supervisorId) => {
-      const notification = {
-        message,
-        type,
-      };
-
       const updatedUser = await User.findByIdAndUpdate(
         supervisorId,
         { $push: { notifications: notification } },
@@ -64,26 +55,18 @@ export const sendNotification = asyncHandler(async (req, res) => {
         throw new Error("User not found");
       }
     });
-
-    return res.status(201).json({
-      message: "Notification sent to all supervisors successfully",
-    });
   }
 
-  // Create a new notification
-  const notification = {
-    message,
-    type,
-  };
-
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { $push: { notifications: notification } },
-    { new: true, runValidators: true }
-  );
-  if (!updatedUser) {
-    res.status(404);
-    throw new Error("User not found");
+  if (userId) {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { notifications: notification } },
+      { new: true, runValidators: true }
+    );
+    if (!updatedUser) {
+      res.status(404);
+      throw new Error("User not found");
+    }
   }
 
   return res.status(201).json({

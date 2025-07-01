@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { UserContext } from "../../../contexts/user.context";
 
 const TestSiteBlock = ({ machineId, testSiteNumber, machineData }) => {
   const navigate = useNavigate();
   const [testSitePoints, setTestSitePoints] = React.useState([]);
   const [siteStatus, setSiteStatus] = React.useState("active");
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     if (machineData) {
@@ -19,9 +22,16 @@ const TestSiteBlock = ({ machineId, testSiteNumber, machineData }) => {
   }, []);
 
   const handleSeeMore = () => {
-    navigate(`/admin/machine/${machineId}/${testSiteNumber}`, {
-      state: { machine: machineData, testSitePoints: testSitePoints },
-    });
+    // Redirect to the test site details page
+    if (currentUser.role === "admin") {
+      navigate(`/admin/machine/${machineId}/${testSiteNumber}`, {
+        state: { machine: machineData, testSitePoints },
+      });
+    } else {
+      navigate(`/supervisor/machine/${machineId}/${testSiteNumber}`, {
+        state: { machine: machineData, testSitePoints },
+      });
+    }
   };
 
   return (

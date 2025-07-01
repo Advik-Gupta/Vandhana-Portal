@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -7,6 +7,7 @@ import ActionButton from "./ActionButton";
 import DataTable from "./DataTable";
 import Button from "../../ui/Button";
 import PhotoDetail from "./PhotoDetail";
+import { UserContext } from "../../../contexts/user.context";
 
 import { updatePointStatus } from "../../api/machine";
 
@@ -16,6 +17,7 @@ function DataUploadedDetail() {
   const location = useLocation();
   const { machine, cycleName, testSiteNumber, pointNo, cycleData } =
     location.state || {};
+  const { currentUser } = useContext(UserContext);
 
   useEffect(() => {
     console.log("Cycle data:", cycleData);
@@ -47,7 +49,23 @@ function DataUploadedDetail() {
             withCredentials: true,
           }
         );
-        if (notify.status === 201) {
+        const notifyAdmin = await axios.post(
+          `http://localhost:8080/api/v1/notifications/send?to=admin`,
+          {
+            message: `Feedback for ${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo} : Data approved BY ${currentUser.role} - ${currentUser.name} (${currentUser._id})`,
+            userId: cycleData.uploadBy,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        if (
+          notify &&
+          notifyAdmin &&
+          notify.status === 201 &&
+          notifyAdmin.status === 201
+        ) {
           console.log("Notification sent successfully");
         }
       })
@@ -79,7 +97,23 @@ function DataUploadedDetail() {
             withCredentials: true,
           }
         );
-        if (notify.status === 201) {
+        const notifyAdmin = await axios.post(
+          `http://localhost:8080/api/v1/notifications/send?to=admin`,
+          {
+            message: `Feedback for ${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo} : ${feedback} BY ${currentUser.role} - ${currentUser.name} (${currentUser._id})`,
+            userId: cycleData.uploadBy,
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        if (
+          notify &&
+          notifyAdmin &&
+          notify.status === 201 &&
+          notifyAdmin.status === 201
+        ) {
           console.log("Notification sent successfully");
         }
       })

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+
+import { UserContext } from "../../../contexts/user.context";
 
 const CycleType = ({
   text,
@@ -11,17 +13,33 @@ const CycleType = ({
   cycleData,
 }) => {
   const navigate = useNavigate();
+  const { currentUser } = useContext(UserContext);
 
   const handleCycleClick = () => {
-    navigate(`/admin/upload-data/${machineId}/${testSiteNumber}/${pointNo}`, {
-      state: {
-        machine: machineData,
-        cycleName: text,
-        testSiteNumber,
-        pointNo,
-        cycleData,
-      },
-    });
+    if (currentUser.role === "admin") {
+      navigate(`/admin/upload-data/${machineId}/${testSiteNumber}/${pointNo}`, {
+        state: {
+          machine: machineData,
+          cycleName: text,
+          testSiteNumber,
+          pointNo,
+          cycleData,
+        },
+      });
+    } else {
+      navigate(
+        `/supervisor/upload-data/${machineId}/${testSiteNumber}/${pointNo}`,
+        {
+          state: {
+            machine: machineData,
+            cycleName: text,
+            testSiteNumber,
+            pointNo,
+            cycleData,
+          },
+        }
+      );
+    }
   };
 
   return (

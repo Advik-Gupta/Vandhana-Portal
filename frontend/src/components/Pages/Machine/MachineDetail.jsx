@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { createTestSite } from "../../api/machine";
@@ -8,6 +8,7 @@ import dropdown from "../../../assets/dd2.png";
 import useMachineDetails from "../../hooks/useMachineDetails";
 import AssignEmployee from "./AssignEmployee";
 import CycleTable from "./CycleTable";
+import { UserContext } from "../../../contexts/user.context";
 
 import { updateMachineData } from "../../api/machine";
 
@@ -18,6 +19,7 @@ function MachineDetail() {
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [showSiteInput, setShowSiteInput] = useState(false);
   const [siteInputValue, setSiteInputValue] = useState("");
+  const { currentUser } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -29,7 +31,9 @@ function MachineDetail() {
     });
     // reload page if response is successful
     if (response) {
-      navigate(`/admin/machines`);
+      currentUser.role === "admin"
+        ? navigate(`/admin/machines`)
+        : navigate(`/supervisor/machines`);
     } else {
       console.error("Failed to update machine with new engineer");
     }
@@ -56,9 +60,16 @@ function MachineDetail() {
     );
     testPoints = site ? site.points || [] : [];
 
-    navigate(`/admin/machine/${id}/${newTestSiteNumber}`, {
-      state: { machine: updatedMachine, testSitePoints: testPoints },
-    });
+    // Redirect to the new test site page
+    if (currentUser.role === "admin") {
+      navigate(`/admin/machine/${id}/${newTestSiteNumber}`, {
+        state: { machine: updatedMachine, testSitePoints: testPoints },
+      });
+    } else {
+      navigate(`/supervisor/machine/${id}/${newTestSiteNumber}`, {
+        state: { machine: updatedMachine, testSitePoints: testPoints },
+      });
+    }
 
     // Reset state
     setSiteInputValue("");

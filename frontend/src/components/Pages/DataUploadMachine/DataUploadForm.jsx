@@ -249,9 +249,7 @@ function DataUploadForm() {
           throw new Error("Failed to upload data");
         });
 
-      if (res) {
-        alert("Upload success!");
-      }
+      alert("Data uploaded successfully!");
     } catch (err) {
       console.error(err);
       alert("Upload failed.");
