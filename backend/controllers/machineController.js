@@ -118,7 +118,14 @@ export const updateLatestDueDate = asyncHandler(async (req, res) => {
 // @access  Admin
 
 export const createMachine = asyncHandler(async (req, res) => {
-  const { name, engineerID, testSiteRangeStart, machineType } = req.body;
+  const {
+    name,
+    engineerID,
+    testSiteRangeStart,
+    machineType,
+    fleetManagerID,
+    machineManagerID,
+  } = req.body;
 
   // check cookie on server
   if (!req.cookies || !req.cookies.jwt) {
@@ -155,6 +162,8 @@ export const createMachine = asyncHandler(async (req, res) => {
   const machine = await Machine.create({
     name,
     assignedEngineer: engineerId,
+    assignedMachineManager: machineManagerID,
+    assignedFleetManager: fleetManagerID,
     createdBy: creatorId,
     machineType,
     testSites: generateTestSites(parseInt(testSiteRangeStart), machineType),

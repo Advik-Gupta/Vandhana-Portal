@@ -146,6 +146,16 @@ const machineSchema = new mongoose.Schema(
       ref: "employees",
       required: true,
     },
+    assignedMachineManager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "employees",
+      required: true,
+    },
+    assignedFleetManager: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "employees",
+      required: true,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "employees",

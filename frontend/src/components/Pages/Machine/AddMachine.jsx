@@ -7,7 +7,10 @@ const AddMachine = () => {
   const [machineName, setMachineName] = useState("");
   const [testSiteRange, setTestSiteRange] = useState("");
   const [engineerId, setEngineerId] = useState(null);
+  const [machineManagerId, setMachineManagerId] = useState(null);
+  const [fleetManagerId, setFleetManagerId] = useState(null);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [showAssignPopupType, setShowAssignPopupType] = useState("");
   const [machineType, setMachineType] = useState(null);
   const [showMachineTypePopup, setShowMachineTypePopup] = useState(false);
 
@@ -18,7 +21,15 @@ const AddMachine = () => {
     setTestSiteRange(e.target.value);
   };
   const handleEngineerChange = (id) => {
-    setEngineerId(id);
+    console.log("Selected Engineer ID:", id);
+    console.log("Selected Type:", showAssignPopupType);
+    if (showAssignPopupType === "engineer") {
+      setEngineerId(id);
+    } else if (showAssignPopupType === "machineManager") {
+      setMachineManagerId(id);
+    } else if (showAssignPopupType === "fleetManager") {
+      setFleetManagerId(id);
+    }
     setShowAssignPopup(false);
   };
   const handleMachineTypeChange = (id) => {
@@ -35,6 +46,8 @@ const AddMachine = () => {
     const machineData = {
       name: machineName,
       engineerID: engineerId,
+      machineManagerID: machineManagerId,
+      fleetManagerID: fleetManagerId,
       testSiteRangeStart: testSiteRange,
       machineType: machineType,
     };
@@ -51,6 +64,11 @@ const AddMachine = () => {
       console.error("Failed to create machine:", error);
       alert("Error creating machine. Check console for details.");
     }
+  };
+
+  const handleAssignPopupToggle = (type) => {
+    setShowAssignPopup((prev) => !prev);
+    setShowAssignPopupType(type);
   };
 
   return (
@@ -102,7 +120,7 @@ const AddMachine = () => {
                 Assign Engineer
               </label>
               <button
-                onClick={() => setShowAssignPopup((prev) => !prev)}
+                onClick={() => handleAssignPopupToggle("engineer")}
                 className="flex absolute top-2/4 justify-center items-center bg-white rounded-xl -translate-y-2/4 h-[41px] right-[75px] w-[50px]"
                 aria-label="Select engineer"
               >
@@ -111,6 +129,44 @@ const AddMachine = () => {
               {engineerId && (
                 <div className="absolute text-white text-xl right-[140px]">
                   Assigned: {engineerId}
+                </div>
+              )}
+            </div>
+          </section>
+          <section className="mb-16">
+            <div className="flex relative items-center bg-black rounded-3xl h-[84px] w-[1292px]">
+              <label className="ml-12 text-3xl text-white">
+                Assign Machine Manager
+              </label>
+              <button
+                onClick={() => handleAssignPopupToggle("machineManager")}
+                className="flex absolute top-2/4 justify-center items-center bg-white rounded-xl -translate-y-2/4 h-[41px] right-[75px] w-[50px]"
+                aria-label="Select engineer"
+              >
+                <img src={dd2} alt="dropdown" />
+              </button>
+              {machineManagerId && (
+                <div className="absolute text-white text-xl right-[140px]">
+                  Assigned: {machineManagerId}
+                </div>
+              )}
+            </div>
+          </section>
+          <section className="mb-16">
+            <div className="flex relative items-center bg-black rounded-3xl h-[84px] w-[1292px]">
+              <label className="ml-12 text-3xl text-white">
+                Assign Fleet Manager
+              </label>
+              <button
+                onClick={() => handleAssignPopupToggle("fleetManager")}
+                className="flex absolute top-2/4 justify-center items-center bg-white rounded-xl -translate-y-2/4 h-[41px] right-[75px] w-[50px]"
+                aria-label="Select engineer"
+              >
+                <img src={dd2} alt="dropdown" />
+              </button>
+              {fleetManagerId && (
+                <div className="absolute text-white text-xl right-[140px]">
+                  Assigned: {fleetManagerId}
                 </div>
               )}
             </div>
@@ -156,7 +212,7 @@ const AddMachine = () => {
         <footer className="flex gap-96 justify-center items-center mt-20 max-md:flex-col max-md:gap-24 max-md:mt-20 max-sm:gap-8 max-sm:px-5 max-sm:py-0 max-sm:mt-16">
           <button
             onClick={handleSubmit}
-            className="flex justify-center items-center text-3xl text-white bg-black rounded-3xl h-[84px]
+            className="flex justify-center items-center text-3xl text-white bg-black rounded-3xl h-[84px] mb-4
            w-[516px] max-md:text-2xl max-sm:text-lg max-sm:h-[60px] max-sm:w-[250px]"
           >
             Generate Test Sites and Create Machines

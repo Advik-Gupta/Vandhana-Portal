@@ -62,7 +62,11 @@ const CycleTable = ({ machine }) => {
               const response = await fetch(url);
               if (!response.ok) throw new Error("Bad response");
               const blob = await response.blob();
-              preFolder?.file(`image_${i + 1}${getExtension(blob.type)}`, blob);
+              const filename = decodeURIComponent(
+                url.split("/").pop()?.split("?")[0] ||
+                  `image_${i + 1}${getExtension(blob.type)}`
+              );
+              preFolder?.file(filename, blob);
             } catch (err) {
               console.warn(`Failed to fetch PRE image: ${url}`, err);
             }
@@ -79,10 +83,11 @@ const CycleTable = ({ machine }) => {
               const response = await fetch(url);
               if (!response.ok) throw new Error("Bad response");
               const blob = await response.blob();
-              postFolder?.file(
-                `image_${i + 1}${getExtension(blob.type)}`,
-                blob
+              const filename = decodeURIComponent(
+                url.split("/").pop()?.split("?")[0] ||
+                  `image_${i + 1}${getExtension(blob.type)}`
               );
+              postFolder?.file(filename, blob);
             } catch (err) {
               console.warn(`Failed to fetch POST image: ${url}`, err);
             }
@@ -97,11 +102,15 @@ const CycleTable = ({ machine }) => {
     saveAs(content, `${cycleLabel}_${testSiteLabel}.zip`);
   };
 
-  const getExtension = (mimeType) => {
-    if (mimeType.includes("jpeg")) return ".jpg";
-    if (mimeType.includes("png")) return ".png";
-    return ".img";
-  };
+  function getExtension(mimeType) {
+    const map = {
+      "image/jpeg": ".jpg",
+      "image/png": ".png",
+      "image/webp": ".webp",
+      "image/gif": ".gif",
+    };
+    return map[mimeType] || "";
+  }
 
   const availableCycles = cycleType ? getAvailableCycles(cycleType) : [];
 

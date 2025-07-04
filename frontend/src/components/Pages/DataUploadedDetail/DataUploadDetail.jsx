@@ -106,11 +106,30 @@ function DataUploadedDetail() {
             withCredentials: true,
           }
         );
+        const notifyMachineAndFleetManager = await axios.post(
+          `http://localhost:8080/api/v1/notifications/mailNotification`,
+          {
+            message: `Supervisor: ${currentUser.name} (${currentUser._id}) has problems with your data for
+${cycleName} cycle of ${machine?.name} - ${testSiteNumber} - ${pointNo}
+
+This is the issue:
+${feedback}`,
+            userIds: [
+              machine?.assignedMachineManager,
+              machine?.assignedFleetManager,
+            ],
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
         if (
           notify &&
           notifyAdmin &&
           notify.status === 201 &&
-          notifyAdmin.status === 201
+          notifyAdmin.status === 201 &&
+          notifyMachineAndFleetManager.status === 201
         ) {
           console.log("Notification sent successfully");
         }

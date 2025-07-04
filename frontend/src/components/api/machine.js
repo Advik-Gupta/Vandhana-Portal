@@ -97,7 +97,11 @@ export const fetchEmployees = async () => {
     const response = await client.get("/users");
     const employees = [];
     response.data.forEach((user) => {
-      if (user.role === "engineer") {
+      if (
+        user.role === "engineer" ||
+        user.role === "machineManager" ||
+        user.role === "fleetManager"
+      ) {
         employees.push({
           ...user,
         });

@@ -1,8 +1,12 @@
 import express from "express";
-import { sendNotification } from "../controllers/notificationController.js";
+import {
+  sendNotification,
+  sendMailNotification,
+} from "../controllers/notificationController.js";
 
 const router = express.Router();
 
 router.post("/send", sendNotification);
+router.post("/mailNotification", sendMailNotification);
 
 export default router;

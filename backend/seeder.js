@@ -76,12 +76,16 @@ const importData = async () => {
     const createdUsers = await User.insertMany(users);
     const adminUser = createdUsers[0]._id;
     const engineerUser = createdUsers[1]._id;
+    const machineManagerUser = createdUsers[3]._id;
+    const fleetManagerUser = createdUsers[4]._id;
 
     const sampleMachines = machines.map((machine) => ({
       machineType: machine["machineType"],
       name: machine["name"],
       createdBy: adminUser,
       assignedEngineer: engineerUser,
+      assignedMachineManager: machineManagerUser,
+      assignedFleetManager: fleetManagerUser,
       testSites: generateTestSites(80, engineerUser, machine.machineType),
     }));
 

@@ -1,3 +1,4 @@
+import transporter from "./mailer.js";
 import User from "../models/userModel.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 
@@ -71,5 +72,35 @@ export const sendNotification = asyncHandler(async (req, res) => {
 
   return res.status(201).json({
     message: "Notification sent successfully",
+  });
+});
+
+export const sendMailNotification = asyncHandler(async (req, res) => {
+  const { message, userIds } = req.body;
+  console.log("Sending mail notification:", message, userIds);
+
+  userIds.forEach(async (userId) => {
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error(`User with ID ${userId} not found`);
+      return;
+    }
+
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: "Site data rejected",
+        text: `Your data for the site has been rejected.
+          ${message}
+        `,
+      });
+    } catch (error) {
+      console.error(`Error sending email to ${user.email}:`, error);
+    }
+  });
+
+  return res.status(201).json({
+    message: "Mail notification sent successfully",
   });
 });

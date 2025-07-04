@@ -44,6 +44,34 @@ const users = [
     ],
   },
   {
+    name: "Advik Gupta",
+    email: "advikgupta6901@gmail.com",
+    password: bcrypt.hashSync("123456", 10),
+    phoneNumber: "1122334455",
+    role: "machineManager",
+    notifications: [
+      {
+        message: "Welcome to your test site portal dashboard!",
+        type: "info",
+        read: false,
+      },
+    ],
+  },
+  {
+    name: "Advik Dev",
+    email: "advikguptadev@gmail.com",
+    password: bcrypt.hashSync("123456", 10),
+    phoneNumber: "1122334455",
+    role: "fleetManager",
+    notifications: [
+      {
+        message: "Welcome to your test site portal dashboard!",
+        type: "info",
+        read: false,
+      },
+    ],
+  },
+  {
     name: "Supervisor User",
     email: "supervisor@example.com",
     password: bcrypt.hashSync("123456", 10),

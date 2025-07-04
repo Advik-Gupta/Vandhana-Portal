@@ -7,12 +7,14 @@ import { fetchEmployees } from "../../api/machine";
 function AssignEmployee({ onSelectEngineer }) {
   const [assignedEmployee, setAssignedEmployee] = useState(null);
   const [employees, setEmployees] = useState([]);
-  const [searchEmp, setSearchEmp] = useState("")
+  const [searchEmp, setSearchEmp] = useState("");
 
   useEffect(() => {
     const getEmployees = async () => {
       const data = await fetchEmployees();
-      const filtered = data.filter(u => u.name.toLowerCase().includes(searchEmp));
+      const filtered = data.filter((u) =>
+        u.name.toLowerCase().includes(searchEmp)
+      );
       setEmployees(filtered);
       console.log("Fetched employees:", data);
     };
@@ -20,15 +22,16 @@ function AssignEmployee({ onSelectEngineer }) {
   }, [searchEmp]);
 
   const handleAssign = (id) => {
+    console.log("Assigning employee with ID:", id);
     setAssignedEmployee(id);
   };
-  const handleSearchEmp =(val)=>{
-    setSearchEmp(val)
-  }
+  const handleSearchEmp = (val) => {
+    setSearchEmp(val);
+  };
   return (
     <div className="w-[600px] max-h-[700px] bg-white rounded-2xl border border-gray-200 shadow-xl p-6">
       <div className="mb-4">
-        <SearchBar onHandleSearch = {handleSearchEmp} />
+        <SearchBar onHandleSearch={handleSearchEmp} />
       </div>
 
       <div className="max-h-[300px] overflow-y-auto pr-2 space-y-3">
