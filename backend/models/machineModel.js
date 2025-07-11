@@ -25,6 +25,11 @@ const grindCycleSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    grindingDate: {
+      type: Date,
+      required: true,
+      default: null,
+    },
   },
   {
     timestamps: true,

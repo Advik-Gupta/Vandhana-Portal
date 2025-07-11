@@ -19,7 +19,7 @@ function DataUploadForm() {
   const [showWarning, setShowWarning] = useState(false);
 
   const location = useLocation();
-  const { cycle, cycleNumber } = location.state || {};
+  const { cycle, cycleNumber, grindingDate, dataType } = location.state || {};
 
   const sectionTitles = useMemo(
     () => [
@@ -48,7 +48,7 @@ function DataUploadForm() {
   );
 
   useEffect(() => {
-    console.log(cycle, cycleNumber);
+    console.log(cycle, cycleNumber, grindingDate, dataType);
     const fetchMachineName = async () => {
       try {
         const response = await axios.get(
@@ -234,6 +234,7 @@ function DataUploadForm() {
       formData.append("rail", testSite.curveType);
       formData.append("ohePoleNumber", ohePoleNumber);
       formData.append("uploadedBy", currentUser._id);
+      formData.append("grindingDate", grindingDate);
 
       const res = await axios
         .post(
@@ -302,7 +303,11 @@ function DataUploadForm() {
           >
             <label className="text-3xl text-black">{title}</label>
             <div className="flex flex-wrap gap-8 text-lg">
-              <div className="flex flex-col">
+              <div
+                className={`flex flex-col ${
+                  dataType === "post" ? "hidden" : ""
+                }`}
+              >
                 <label className="mb-1 text-gray-700">Pre Value</label>
                 <input
                   type="number"
@@ -318,7 +323,11 @@ function DataUploadForm() {
                   }
                 />
               </div>
-              <div className="flex flex-col">
+              <div
+                className={`flex flex-col ${
+                  dataType === "pre" ? "hidden" : ""
+                }`}
+              >
                 <label className="mb-1 text-gray-700">Post Value</label>
                 <input
                   type="number"
@@ -337,16 +346,19 @@ function DataUploadForm() {
             </div>
           </div>
         ) : (
-          <ViewSection
-            key={title}
-            title={title}
-            className="mt-7 ml-2.5"
-            prePhoto={fileData[title].pre}
-            postPhoto={fileData[title].post}
-            onPreChange={handlePreChange}
-            onPostChange={handlePostChange}
-            isMiniprof={title === "Miniprof"}
-          />
+          dataType && (
+            <ViewSection
+              key={title}
+              title={title}
+              className="mt-7 ml-2.5"
+              prePhoto={fileData[title].pre}
+              postPhoto={fileData[title].post}
+              onPreChange={handlePreChange}
+              onPostChange={handlePostChange}
+              isMiniprof={title === "Miniprof"}
+              dataType={dataType}
+            />
+          )
         )
       )}
       <div className="w-full mt-10 px-4">
@@ -381,7 +393,8 @@ function DataUploadForm() {
       {firstUpload && showWarning && (
         <div className="w-full mt-10 p-6 bg-yellow-100 border-l-4 border-yellow-500 rounded-xl text-black">
           <h3 className="text-2xl font-semibold mb-2">
-            You're about to start uploading data
+            You're about to start uploading data on:{" "}
+            {grindingDate.toLocaleDateString("en-GB")}
           </h3>
           <p className="mb-4">
             You are initiating the upload process for point{" "}
@@ -390,8 +403,8 @@ function DataUploadForm() {
             </strong>
             . Once you upload the <strong>pre</strong> data, you must complete
             uploading the <strong>post</strong> data within{" "}
-            <strong>3 days</strong>. You will not be allowed to upload post data
-            after that.
+            <strong>10 days</strong>. You will not be allowed to upload post
+            data after that.
           </p>
           <div className="flex gap-4">
             <button

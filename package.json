@@ -31,6 +31,7 @@
     "multer": "^2.0.0",
     "nodemailer": "^7.0.3",
     "random-password": "^0.1.2",
+    "react-datepicker": "^8.4.0",
     "react-router-dom": "^7.6.1"
   },
   "devDependencies": {

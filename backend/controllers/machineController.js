@@ -189,6 +189,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
     rail,
     ohePoleNumber,
     uploadedBy,
+    grindingDate,
   } = req.body;
 
   let uploadDate = new Date();
@@ -291,6 +292,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
           uploadBy: uploadedBy,
           status: "pending",
           createdAt: dataUploadTime,
+          grindingDate,
         });
         point[cycleType]
           .get(cycleNumber)
@@ -339,6 +341,7 @@ export const uploadMachineData = asyncHandler(async (req, res) => {
             uploadBy: uploadedBy,
             status: "pending",
             createdAt: dataUploadTime,
+            grindingDate,
           });
           point[cycleType].get(cycleNumber)[phase].get(field).push(value);
         } else {

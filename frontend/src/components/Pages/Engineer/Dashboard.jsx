@@ -5,6 +5,9 @@ import Button from "../../ui/Button";
 import { fetchRawMachines } from "../../api/machine";
 import UpdatesSection from "./Updates";
 
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+
 const Dashboard = () => {
   const [allMachines, setAllMachines] = useState([]);
   const { currentUser } = useContext(UserContext);
@@ -14,6 +17,8 @@ const Dashboard = () => {
   const [point, setPoint] = useState("");
   const [cycle, setCycle] = useState("");
   const [cycleNumber, setCycleNumber] = useState("");
+  const [grindingDate, setGrindingDate] = useState(null);
+  const [dataType, setDataType] = useState("");
   const [chosenMachineData, setChosenMachineData] = useState(null);
 
   const [otherUpdates, setOtherUpdates] = useState(null);
@@ -147,6 +152,26 @@ const Dashboard = () => {
     };
   }
 
+  function onCycleNumberChoice(e) {
+    const newCycleNumber = e.target.value;
+    const allPointsData = allMachines
+      .find((machineToFind) => machineToFind.name === machine)
+      ?.testSites.find((site) => site.testSiteNumber === testSite)?.points;
+
+    let cycleGrindingDate = null;
+    cycleGrindingDate =
+      cycle === "Grind"
+        ? (cycleGrindingDate = allPointsData.find(
+            (pointToFind) => pointToFind.pointName === point
+          )?.grindCycles?.[newCycleNumber]?.grindingDate)
+        : (cycleGrindingDate = allPointsData.find(
+            (pointToFind) => pointToFind.pointName === point
+          )?.repaintCycles?.[newCycleNumber]?.grindingDate);
+
+    setCycleNumber(newCycleNumber);
+    setGrindingDate(cycleGrindingDate ? new Date(cycleGrindingDate) : null);
+  }
+
   useEffect(() => {
     currentUser?.notifications?.reverse().map((notification) => {
       if (notification.type === "info" || notification.type === "warning") {
@@ -270,7 +295,7 @@ const Dashboard = () => {
               <select
                 className="w-full border rounded-xl px-4 py-3"
                 value={cycleNumber}
-                onChange={(e) => setCycleNumber(e.target.value)}
+                onChange={onCycleNumberChoice}
               >
                 <option value="">-- Select Cycle Number --</option>
                 {(cycle === "Grind"
@@ -284,6 +309,57 @@ const Dashboard = () => {
               </select>
             </div>
 
+            <div className="mb-6">
+              <label className="block font-semibold mb-2">
+                Choose Grinding Date
+              </label>
+              {!grindingDate ? (
+                <DatePicker
+                  selected={grindingDate}
+                  onChange={(date) => setGrindingDate(date)}
+                  className="w-full border rounded-xl px-4 py-3"
+                  placeholderText="Select Grinding Date"
+                  dateFormat="dd/MM/yyyy"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  maxDate={new Date()} // Prevent future dates
+                  value={grindingDate}
+                />
+              ) : (
+                <div className="flex flex-row items-center justify-between">
+                  <DatePicker
+                    selected={grindingDate}
+                    onChange={(date) => setGrindingDate(date)}
+                    className="w-full border rounded-xl px-4 py-3"
+                    placeholderText="Select Grinding Date"
+                    dateFormat="dd/MM/yyyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    maxDate={new Date()} // Prevent future dates
+                    disabled
+                  />
+                  <p>Already set!!</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mb-6">
+              <label className="block font-semibold mb-2">
+                Choose Data Type
+              </label>
+              <select
+                className="w-full border rounded-xl px-4 py-3"
+                value={dataType}
+                onChange={(e) => setDataType(e.target.value)}
+              >
+                <option value="">-- Select Data Type --</option>
+                <option value="pre">Pre Data</option>
+                <option value="post">Post Data</option>
+              </select>
+            </div>
+
             {/* Upload Button */}
             <Button
               text="Upload Data"
@@ -294,6 +370,8 @@ const Dashboard = () => {
               dataToPass={{
                 cycle: cycle,
                 cycleNumber: cycleNumber,
+                grindingDate: grindingDate,
+                dataType: dataType,
               }}
             />
           </div>
